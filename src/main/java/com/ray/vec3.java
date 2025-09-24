@@ -3,7 +3,7 @@ package com.ray;
 
 public class Vec3 {
 
-    double[] e = new double[3];
+    final double[] e = new double[3];
 
 
     Vec3(){}
@@ -59,13 +59,13 @@ public class Vec3 {
         return divide(this.magnitude());
     }
 
-    public double dot(Vec3 v1, Vec3 other) {
+    public double dot(final Vec3 other) {
         return (e[0] * other.e[0]
                 + e[1] * other.e[1]
                 + e[2] * other.e[2]);
     }
 
-    public Vec3 cross(Vec3 other) {
+    public Vec3 cross(final Vec3 other) {
         return new Vec3(e[1] * other.e[2] - e[2] * other.e[1],
                 -(e[0] * other.e[2] - e[2] * other.e[0]),
                 e[0] * other.e[1] - e[1] * other.e[0]);

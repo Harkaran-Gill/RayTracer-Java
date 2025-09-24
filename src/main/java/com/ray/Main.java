@@ -3,20 +3,39 @@ package com.ray;
 import java.io.*;
 
 public class Main {
+    static final Color red = new Color(1.0, 0, 0);
+    static final Color white = new Color(1.0, 1.0, 1.0);
+    static final Color skyBlue = new Color(0.5, 0.7, 1.0);
+
+    static boolean hitSphere(Ray r, Point3 camCenter, double radius) {
+        Vec3 oc = camCenter.sub(r.getOrigin());
+        var a = r.getDirection().magnitudeSquared();
+        var b = -2.0 * r.getDirection().dot(oc);
+        var c = oc.magnitudeSquared() - radius * radius;
+        var discriminant = b * b - 4.0 * a * c;
+
+        return discriminant >= 0.0;
+    }
 
     static Color rayColor (Ray r){
+        if (hitSphere(r, new Point3(0,0,-1), 0.5)){
+            return red;
+        }
+
         Vec3 unitRay = r.getDirection().unitVector();
         double a = 0.5 * (unitRay.y() + 1.0);
         //System.out.println(a);
-        return new Color(1.0,1.0,1.0).multiply(1.0-a)
-                .add(new Color(0.5,0.7,1.0).multiply(a));
+        Color temp = new Color();
+        temp.addSelf(white.multiply(1.0-a));
+        temp.addSelf(skyBlue.multiply(a));
+        return temp;
     }
 
     public static void main(String[] args) {
         long start_time =  System.nanoTime();
 
         double aspectRatio = 16.0/9.0;
-        int imageWidth = 400;
+        int imageWidth = 1920;
 
         int imageHeight = Math.max(1, (int)(imageWidth / aspectRatio));
 
@@ -54,7 +73,7 @@ public class Main {
         pw.println("P3\n" + imageWidth + " "  + imageHeight + "\n255");
 
         for (int j = 0; j < imageHeight; j++) {
-            System  .out.print("Scanlines remaining: " + (imageHeight-j) + "\r");
+            System.out.print("Scanlines remaining: " + (imageHeight-j) + "\r");
             System.out.flush();
             for (int i = 0; i < imageWidth; i++) {
                 Point3 pixelCenter  = pixel00Loc.add(pixelDeltaU.multiply(i))

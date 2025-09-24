@@ -1,8 +1,5 @@
 package com.ray;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 
 public class Color extends Vec3 {
@@ -13,6 +10,12 @@ public class Color extends Vec3 {
 
     public Color add(Vec3 v) {
         return new Color(super.add(v));
+    }
+
+    public void addSelf(Vec3 v) {
+        e[0] += v.x();
+        e[1] += v.y();
+        e[2] += v.z();
     }
 
     public Color multiply(double t){
