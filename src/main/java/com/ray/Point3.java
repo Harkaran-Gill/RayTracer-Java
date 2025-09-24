@@ -16,4 +16,16 @@ public class Point3 extends Vec3{
         Vec3 result = super.sub(other);
         return new Point3(result);
     }
+
+    public void subSelf(Vec3 other) {
+        e[0] -= other.e[0];
+        e[1] -= other.e[1];
+        e[2] -= other.e[2];
+    }
+
+    public void set(Vec3 other) {
+        e[0] = other.x();
+        e[1] = other.y();
+        e[2] = other.z();
+    }
 }

@@ -3,7 +3,7 @@ package com.ray;
 
 public class Vec3 {
 
-    final double[] e = new double[3];
+    double[] e = new double[3];
 
 
     Vec3(){}
@@ -21,6 +21,12 @@ public class Vec3 {
                 e[1] + other.e[1],
                 e[2] + other.e[2]
         );
+    }
+
+    public void addSelf(Vec3 v) {
+        e[0] += v.x();
+        e[1] += v.y();
+        e[2] += v.z();
     }
 
     Vec3 sub(final Vec3 other) {

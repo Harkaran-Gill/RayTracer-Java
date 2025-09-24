@@ -12,15 +12,16 @@ public class Color extends Vec3 {
         return new Color(super.add(v));
     }
 
-    public void addSelf(Vec3 v) {
-        e[0] += v.x();
-        e[1] += v.y();
-        e[2] += v.z();
-    }
 
     public Color multiply(double t){
         Vec3 result = super.multiply(t);
         return new Color(result);
+    }
+
+    public void set(double x, double y, double z){
+        e[0] = x;
+        e[1] = y;
+        e[2] = z;
     }
 
     public static void write_color(Color pixel_color, PrintWriter pw) {
