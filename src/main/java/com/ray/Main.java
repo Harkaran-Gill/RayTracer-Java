@@ -7,34 +7,36 @@ public class Main {
     static final Color white = new Color(1.0, 1.0, 1.0);
     static final Color skyBlue = new Color(0.5, 0.7, 1.0);
 
-    private static final Color tempColor = new Color();
-    private static final Point3 tempVec = new Point3();
-    private static final Point3 tempVec2 = new Point3();
+    static double hitSphere(Ray r, Point3 camCenter, double radius) {
+        Vec3 oc = camCenter.sub(r.getOrigin());
+        double a = r.getDirection().magnitudeSquared();
+        double h = r.getDirection().dot(oc);
+        double c = oc.magnitudeSquared() - radius * radius;
+        double discriminant = h * h - a * c;
 
-    static boolean hitSphere(Ray r, Point3 camCenter, double radius) {
-        tempVec2.set(camCenter);
-        tempVec2.subSelf(r.getOrigin());
-        Vec3 oc = tempVec2;
-        var a = r.getDirection().magnitudeSquared();
-        var b = -2.0 * r.getDirection().dot(oc);
-        var c = oc.magnitudeSquared() - radius * radius;
-        var discriminant = b * b - 4.0 * a * c;
-
-        return discriminant >= 0.0;
+        if (discriminant < 0) {
+            return -1.0;
+        }
+        else
+            return (h - Math.sqrt(discriminant))/a;
     }
 
     static Color rayColor (Ray r){
-        if (hitSphere(r, new Point3(0,0,-1), 0.5)){
-            return red;
+        double t = hitSphere(r, new Point3(0,0,-1), 0.5);
+        if (t >= 0.001){
+            Vec3 N = r.at(t)
+                    .sub(new Point3(0,0,-1))
+                    .unitVector();
+            return new Color(N.x() + 1, N.y() + 1, N.z() + 1).multiply(0.5);
         }
 
         Vec3 unitRay = r.getDirection().unitVector();
         double a = 0.5 * (unitRay.y() + 1.0);
-
-        tempColor.set(0,0,0);
-        tempColor.addSelf(white.multiply(1.0-a));
-        tempColor.addSelf(skyBlue.multiply(a));
-        return tempColor;
+        //System.out.println(a);
+        Color temp = new Color();
+        temp.addSelf(white.multiply(1.0-a));
+        temp.addSelf(skyBlue.multiply(a));
+        return temp;
     }
 
     public static void main(String[] args) {
@@ -78,25 +80,16 @@ public class Main {
 
         pw.println("P3\n" + imageWidth + " "  + imageHeight + "\n255");
 
-        Color pixelColor;
         for (int j = 0; j < imageHeight; j++) {
             System.out.print("Scanlines remaining: " + (imageHeight-j) + "\r");
             System.out.flush();
             for (int i = 0; i < imageWidth; i++) {
-                tempVec.set(pixel00Loc);
-                tempVec.addSelf(pixelDeltaU.multiply(i));
-                tempVec.addSelf(pixelDeltaV.multiply(i));
-
-                // The above code is replacement for below, reduces memory allocations
-                //Point3 pixelCenter  = pixel00Loc.add(pixelDeltaU.multiply(i))
-                //        .add(pixelDeltaV.multiply(j));
-
-                Vec3 rayDirection = tempVec.sub(cameraCenter); // tempVec is pixelCenter
-
-
+                Point3 pixelCenter  = pixel00Loc.add(pixelDeltaU.multiply(i))
+                        .add(pixelDeltaV.multiply(j));
+                Vec3 rayDirection = pixelCenter.sub(cameraCenter);
 
                 Ray r = new Ray(cameraCenter, rayDirection);
-                pixelColor = rayColor(r);
+                Color pixelColor = rayColor(r);
 
                 Color.write_color(pixelColor, pw);
             }
