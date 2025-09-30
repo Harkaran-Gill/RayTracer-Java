@@ -7,19 +7,27 @@ public class Main {
     static final Color white = new Color(1.0, 1.0, 1.0);
     static final Color skyBlue = new Color(0.5, 0.7, 1.0);
 
-    static boolean hitSphere(Ray r, Point3 camCenter, double radius) {
+    static double hitSphere(Ray r, Point3 camCenter, double radius) {
         Vec3 oc = camCenter.sub(r.getOrigin());
-        var a = r.getDirection().magnitudeSquared();
-        var b = -2.0 * r.getDirection().dot(oc);
-        var c = oc.magnitudeSquared() - radius * radius;
-        var discriminant = b * b - 4.0 * a * c;
+        double a = r.getDirection().magnitudeSquared();
+        double h = r.getDirection().dot(oc);
+        double c = oc.magnitudeSquared() - radius * radius;
+        double discriminant = h * h - a * c;
 
-        return discriminant >= 0.0;
+        if (discriminant < 0) {
+            return -1.0;
+        }
+        else
+            return (h - Math.sqrt(discriminant))/a;
     }
 
     static Color rayColor (Ray r){
-        if (hitSphere(r, new Point3(0,0,-1), 0.5)){
-            return red;
+        double t = hitSphere(r, new Point3(0,0,-1), 0.5);
+        if (t >= 0.001){
+            Vec3 N = r.at(t)
+                    .sub(new Point3(0,0,-1))
+                    .unitVector();
+            return new Color(N.x() + 1, N.y() + 1, N.z() + 1).multiply(0.5);
         }
 
         Vec3 unitRay = r.getDirection().unitVector();
