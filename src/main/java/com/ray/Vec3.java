@@ -9,6 +9,13 @@ public class Vec3 {
     Vec3(){}
     Vec3(double x, double y, double z) {e[0] = x; e[1] = y; e[2] = z;}
 
+    public void set(Vec3 other){
+        e[0] = other.e[0];
+        e[1] = other.e[1];
+        e[2] = other.e[2];
+    }
+    public Vec3 copy(){ return new Vec3(e[0], e[1], e[2]); }
+
     public double x() {return e[0];}
     public double y() {return e[1];}
     public double z() {return e[2];}

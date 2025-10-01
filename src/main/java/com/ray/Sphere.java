@@ -23,18 +23,18 @@ public class Sphere implements Hittable {
 
 
         double root = (h - sqrtDiscriminant) / a;
-        if (root <= tMin && root >= tMax) {
+        if (root <= tMin || root >= tMax ) {
             root = (h + sqrtDiscriminant) / a;
-            if (root <= tMin && root >= tMax) {
+            if (root <= tMin || root >= tMax) {
                 return false;
             }
         }
 
         hitRecord.t = root;
         hitRecord.p = r.at(root);
-        hitRecord.normal = (hitRecord.p
+        Vec3 outwardNormal = (hitRecord.p
                 .sub(center)).divide(radius);
+        hitRecord.setFaceNormal(r, outwardNormal);
         return true;
-
     }
 }

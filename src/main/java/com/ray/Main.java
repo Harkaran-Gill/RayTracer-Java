@@ -21,18 +21,19 @@ public class Main {
             return (h - Math.sqrt(discriminant))/a;
     }
 
-    static Color rayColor (Ray r){
-        double t = hitSphere(r, new Point3(0,0,-1), 0.5);
-        if (t >= 0.001){
-            Vec3 N = r.at(t)
-                    .sub(new Point3(0,0,-1))
-                    .unitVector();
-            return new Color(N.x() + 1, N.y() + 1, N.z() + 1).multiply(0.5);
+    static Color rayColor (Ray r, Hittable world){
+        HitRecord rec = new HitRecord();
+        if (world.hit(r, 0, Double.MAX_VALUE, rec)){
+            return new Color(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1).multiply(0.5);
         }
 
         Vec3 unitRay = r.getDirection().unitVector();
         double a = 0.5 * (unitRay.y() + 1.0);
-        //System.out.println(a);
+        /* return new Color(1.0,1.0,1.0)
+                .multiply(1.0-a)
+                .add(new Color(0.5,0.7,1.0)
+                        .multiply(a)); */
+
         Color temp = new Color();
         temp.addSelf(white.multiply(1.0-a));
         temp.addSelf(skyBlue.multiply(a));
@@ -42,10 +43,18 @@ public class Main {
     public static void main(String[] args) {
         long start_time =  System.nanoTime();
 
+        // Image
         double aspectRatio = 16.0/9.0;
         int imageWidth = 1920;
 
+        // Calculate the image height, and ensure that it's at least 1.
         int imageHeight = Math.max(1, (int)(imageWidth / aspectRatio));
+
+        // World
+        HittableList world = new HittableList();
+
+        world.add(new Sphere(new Point3(0,0,-1), 0.5));
+        world.add(new Sphere(new Point3(0,-100.5,-1), 100));
 
         double focalLength = 1.0;
         double viewportHeight = 2.0;
@@ -89,7 +98,7 @@ public class Main {
                 Vec3 rayDirection = pixelCenter.sub(cameraCenter);
 
                 Ray r = new Ray(cameraCenter, rayDirection);
-                Color pixelColor = rayColor(r);
+                Color pixelColor = rayColor(r, world);
 
                 Color.write_color(pixelColor, pw);
             }
