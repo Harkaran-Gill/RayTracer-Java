@@ -8,14 +8,19 @@ public class Color extends Vec3 {
     public Color(double x, double y, double z) {super(x, y, z);}
     public Color(Vec3 v) {super(v.x(), v.y(), v.z());}
 
-    public Color add(Vec3 v) {
-        return new Color(super.add(v));
+    public Color multiplySelf(double t){
+        // The cast here would not normally work but since the super.multiplySelf returns 'this'
+        // it is actually returning a Vec3 reference to Color object in memory, which can be
+        // then successfully cast
+        return (Color) super.multiplySelf(t);
     }
 
-    public void addSelf(Vec3 v) {
-        e[0] += v.x();
-        e[1] += v.y();
-        e[2] += v.z();
+    public Color addSelf(Vec3 v){
+        return (Color) super.addSelf(v);
+    }
+
+    public Color add(Vec3 v) {
+        return new Color(super.add(v));
     }
 
     public Color multiply(double t){

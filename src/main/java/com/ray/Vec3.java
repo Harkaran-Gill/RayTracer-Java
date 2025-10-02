@@ -20,6 +20,34 @@ public class Vec3 {
     public double y() {return e[1];}
     public double z() {return e[2];}
 
+    public Vec3 addSelf(Vec3 other){
+        e[0] += other.e[0];
+        e[1] += other.e[1];
+        e[2] += other.e[2];
+        return this;
+    }
+
+    public Vec3 subSelf(Vec3 other){
+        e[0] -= other.e[0];
+        e[1] -= other.e[1];
+        e[2] -= other.e[2];
+        return this;
+    }
+
+    public Vec3 multiplySelf(double t){
+        e[0] *= t;
+        e[1] *= t;
+        e[2] *= t;
+        return this;
+    }
+
+    public Vec3 divideSelf(Vec3 other){
+        e[0] /= other.e[0];
+        e[1] /= other.e[1];
+        e[2] /= other.e[2];
+        return this;
+    }
+
     Vec3 negative() { return new Vec3(-e[0], -e[1], -e[2]); }
 
     Vec3 add(final Vec3 other) {

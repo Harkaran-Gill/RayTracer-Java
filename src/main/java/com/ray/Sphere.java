@@ -9,7 +9,7 @@ public class Sphere implements Hittable {
         this.radius = radius;
     }
 
-    public boolean hit(Ray r, double tMin, double tMax, HitRecord hitRecord) {
+    public boolean hit(Ray r, Interval rayInterval, HitRecord hitRecord) {
         Vec3 oc = center.sub(r.getOrigin());
         double a = r.getDirection().magnitudeSquared();
         double h = r.getDirection().dot(oc);
@@ -23,9 +23,9 @@ public class Sphere implements Hittable {
 
 
         double root = (h - sqrtDiscriminant) / a;
-        if (root <= tMin || root >= tMax ) {
+        if (root <= rayInterval.min || root >= rayInterval.max ) {
             root = (h + sqrtDiscriminant) / a;
-            if (root <= tMin || root >= tMax) {
+            if (root <= rayInterval.min || root >= rayInterval.max) {
                 return false;
             }
         }
