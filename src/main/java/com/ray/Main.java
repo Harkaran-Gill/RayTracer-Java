@@ -52,8 +52,14 @@ public class Main {
         Camera cam = new Camera();
         cam.aspectRatio = 16.0/9.0;
         cam.imageWidth = 1920;
+        cam.samplesPerPixel = 50;
 
-        cam.render(world);
+        try {
+            cam.render(world);
+        }
+        catch (Exception e) {
+            System.err.println("Unable to write to file: " + e.getMessage());
+        }
 
         long end_time = System.nanoTime();
         System.out.println("Time taken: " + (end_time - start_time)/1e9 + " seconds");

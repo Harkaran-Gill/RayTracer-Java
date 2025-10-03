@@ -6,10 +6,7 @@ public class HitRecord {
     double t;
     boolean front_face;
 
-    HitRecord() {
-        p = new Point3();
-        normal = new Vec3();
-    }
+    HitRecord() {    }
 
     void set(HitRecord other) {
         p = (other.p);
@@ -22,8 +19,11 @@ public class HitRecord {
         // Sets the hit record normal vector.
         // NOTE: the parameter `outward_normal` is assumed to have unit length.
 
-        front_face = outwardNormal.dot(r.getDirection()) < 0;
-        normal = front_face ? outwardNormal.copy() : outwardNormal.negative();
+        front_face = outwardNormal.dot(
+                r.dir) < 0;
+        normal = front_face ?
+                outwardNormal.copy()
+                : outwardNormal.negative();
     }
 
 }

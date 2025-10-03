@@ -41,10 +41,10 @@ public class Vec3 {
         return this;
     }
 
-    public Vec3 divideSelf(Vec3 other){
-        e[0] /= other.e[0];
-        e[1] /= other.e[1];
-        e[2] /= other.e[2];
+    public Vec3 divideSelf(double t){
+        e[0] /= t;
+        e[1] /= t;
+        e[2] /= t;
         return this;
     }
 
@@ -104,6 +104,14 @@ public class Vec3 {
         return new Vec3(e[1] * other.e[2] - e[2] * other.e[1],
                 -(e[0] * other.e[2] - e[2] * other.e[0]),
                 e[0] * other.e[1] - e[1] * other.e[0]);
+    }
+
+    public static Vec3 random(){
+        return new Vec3(Utility.randomDouble(), Utility.randomDouble(), Utility.randomDouble());
+    }
+
+    public static Vec3 random(double min, double max){
+        return new Vec3(Utility.randomDouble(min, max), Utility.randomDouble(min, max), Utility.randomDouble(min, max));
     }
 
     @Override

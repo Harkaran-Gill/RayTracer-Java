@@ -1,5 +1,8 @@
 package com.ray;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 
 public class Color extends Vec3 {
@@ -28,17 +31,19 @@ public class Color extends Vec3 {
         return new Color(result);
     }
 
-    public static void write_color(Color pixel_color, PrintWriter pw) {
+    public static void write_color(Color pixel_color, PrintWriter pw) throws IOException {
         var r = pixel_color.x();
         var g = pixel_color.y();
         var b = pixel_color.z();
 
-        // Normalize [0,1] to [0. 255]
-        int rbyte = (int)(255.999 * r);
-        int gbyte = (int)(255.999 * g);
-        int bbyte = (int)(255.999 * b);
 
-        pw.write(rbyte + " " + gbyte + " " + bbyte + "\n");
+        final Interval intensity = new Interval(0, 0.999);
+        // Normalize [0,1] to [0. 255]
+        int rByte = (int)(256 * intensity.clamp(r));
+        int gByte = (int)(256 * intensity.clamp(g));
+        int bByte = (int)(256 * intensity.clamp(b));
+
+        pw.write(rByte + " " + gByte + " " + bByte + "\n");
 
     }
 }

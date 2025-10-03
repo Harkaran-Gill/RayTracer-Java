@@ -27,4 +27,9 @@ public class Interval {
     public boolean surrounds(double x) {
         return min < x && x < max;
     }
+
+    double clamp(double x) {
+        if (x < min) return min;
+        return Math.min(x, max);
+    }
 }

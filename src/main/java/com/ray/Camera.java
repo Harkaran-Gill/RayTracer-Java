@@ -1,35 +1,32 @@
 package com.ray;
 
+import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
 public class Camera {
-    double aspectRatio = 16.0/9.0;
-    int imageWidth     = 100;
+    double aspectRatio  = 16.0/9.0;
+    int imageWidth      = 100;
+    int samplesPerPixel = 10;
 
     private int imageHeight;
+    private double pixelSampleScale;
     private Point3 cameraCenter;
     private Point3 pixel00Loc;
     private Vec3 pixelDeltaU;
     private Vec3 pixelDeltaV;
 
-    void render(Hittable world){
+    void render (Hittable world) throws IOException{
         initialize();
         System.out.println("P3\n" + imageWidth + ' ' + imageHeight + "\n255\n");
 
+        // TODO: Find out if BufferedWriter performs better than PrintWriter here
         PrintWriter pw;
-
-        try {
-            pw = new PrintWriter(
-                    new BufferedWriter(
-                            new FileWriter("image.ppm")));
-        }
-        catch (IOException e) {
-            System.out.println("Error writing to file " + e.getMessage());
-            return;
-        }
+        BufferedWriter bw;
+        bw = new BufferedWriter(new FileWriter("image.ppm"));
+        pw = new PrintWriter(bw);
 
         pw.println("P3\n" + imageWidth + " "  + imageHeight + "\n255");
 
@@ -37,19 +34,18 @@ public class Camera {
             System.out.print("Scanlines remaining: " + (imageHeight-j) + "\r");
             System.out.flush();
             for (int i = 0; i < imageWidth; i++) {
-                Point3 pixelCenter  = pixel00Loc.add(pixelDeltaU.multiply(i))
-                        .add(pixelDeltaV.multiply(j));
-                Vec3 rayDirection = pixelCenter.sub(cameraCenter);
 
-                Ray r = new Ray(cameraCenter, rayDirection);
-                Color pixelColor = rayColor(r, world);
+                Color pixelColor = new Color(0,0,0);
 
-                Color.write_color(pixelColor, pw);
+                for (int samples = 0; samples < samplesPerPixel; samples++) {
+                    Ray r = getRay(i, j);
+                    pixelColor.addSelf(rayColor(r, world));
+                }
+
+                Color.write_color(pixelColor.multiplySelf(pixelSampleScale), pw);
             }
         }
         pw.close();
-
-
     }
 
     private void initialize(){
@@ -60,6 +56,9 @@ public class Camera {
         double focalLength = 1.0;
         double viewportHeight = 2.0;
         double viewportWidth = viewportHeight * ((double)imageWidth / imageHeight);
+
+        pixelSampleScale = 1.0/samplesPerPixel;
+
         cameraCenter = new Point3(0,0,0);
 
         Vec3 viewportU = new Vec3(viewportWidth, 0, 0);
@@ -72,6 +71,21 @@ public class Camera {
                 cameraCenter.sub(new Point3(viewportWidth/2, -viewportHeight/2, focalLength));
         pixel00Loc = viewportUpperLeft.add(pixelDeltaU.divide(2))
                 .add(pixelDeltaV.divide(2));
+    }
+
+    Ray getRay(int i,int j){
+        Vec3 offset = sampleSquare();
+        Point3 sampledPoint = pixel00Loc.add(pixelDeltaU.multiply(i + offset.x()))
+                .addSelf(pixelDeltaV.multiply(j + offset.y()));
+
+        Point3 rayOrigin = cameraCenter;
+        Vec3 rayDirection = sampledPoint.subSelf(rayOrigin);
+
+        return new Ray(rayOrigin, rayDirection);
+    }
+
+    Vec3 sampleSquare(){
+        return new Vec3 (Utility.randomDouble(-.5,0.5), Utility.randomDouble(-0.5, 0.5), 0);
     }
 
     Color rayColor(Ray r, Hittable world) {
