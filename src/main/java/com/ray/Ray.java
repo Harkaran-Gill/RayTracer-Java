@@ -1,8 +1,8 @@
 package com.ray;
 
 public class Ray {
-    private Point3 orig;
-    private Vec3 dir;
+    Point3 orig;
+    Vec3 dir;
 
     public Ray(){}
     public Ray(Point3 origin, Vec3 direction) {orig = origin; dir = direction;}
