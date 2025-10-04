@@ -10,6 +10,7 @@ public class Camera {
     double aspectRatio  = 16.0/9.0;
     int imageWidth      = 100;
     int samplesPerPixel = 10;
+    int maxDepth = 10;
 
     private int imageHeight;
     private double pixelSampleScale;
@@ -39,7 +40,7 @@ public class Camera {
 
                 for (int samples = 0; samples < samplesPerPixel; samples++) {
                     Ray r = getRay(i, j);
-                    pixelColor.addSelf(rayColor(r, world));
+                    pixelColor.addSelf(rayColor(r, world, maxDepth));
                 }
 
                 Color.write_color(pixelColor.multiplySelf(pixelSampleScale), pw);
@@ -88,10 +89,18 @@ public class Camera {
         return new Vec3 (Utility.randomDouble(-.5,0.5), Utility.randomDouble(-0.5, 0.5), 0);
     }
 
-    Color rayColor(Ray r, Hittable world) {
+    Color rayColor(Ray r, Hittable world, int depth) {
+        if (depth <= 0) {
+            return new Color(0,0,0);
+        }
         HitRecord rec = new HitRecord();
-        if (world.hit(r, new Interval(0, Utility.infinity), rec)){
-            return new Color(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1).multiplySelf(0.5);
+        if (world.hit(r, new Interval(0.001, Utility.infinity), rec)){
+            Vec3 direction = Vec3.randomOnHemisphere(rec.normal)
+                    .addSelf(rec.normal);
+
+            return rayColor(new Ray(rec.p, direction), world, depth-1)
+                    .multiplySelf(0.5);
+            //return new Color(direction.x() + 1, direction.y() + 1, direction.z() + 1).multiplySelf(0.5);
         }
 
         Vec3 unitRay = r.getDirection().unitVector();

@@ -51,8 +51,9 @@ public class Main {
 
         Camera cam = new Camera();
         cam.aspectRatio = 16.0/9.0;
-        cam.imageWidth = 1920;
+        cam.imageWidth = 802;
         cam.samplesPerPixel = 50;
+        cam.maxDepth = 15;
 
         try {
             cam.render(world);

@@ -48,6 +48,13 @@ public class Vec3 {
         return this;
     }
 
+    public Vec3 negativeSelf(){
+        e[0] = -e[0];
+        e[1] = -e[1];
+        e[2] = -e[2];
+        return this;
+    }
+
     Vec3 negative() { return new Vec3(-e[0], -e[1], -e[2]); }
 
     Vec3 add(final Vec3 other) {
@@ -112,6 +119,27 @@ public class Vec3 {
 
     public static Vec3 random(double min, double max){
         return new Vec3(Utility.randomDouble(min, max), Utility.randomDouble(min, max), Utility.randomDouble(min, max));
+    }
+
+    public static Vec3 randomUnitVector(){
+        while(true){
+            Vec3 rand = random(-1,1);
+            double magSquared = rand.magnitudeSquared();
+            if (1e-160 < magSquared && magSquared <= 1){
+                return rand.divideSelf(Math.sqrt(magSquared));
+                //return rand;
+            }
+        }
+    }
+
+    public static Vec3 randomOnHemisphere(Vec3 normal){
+        // Tried using vector in Unit Square and saw marginal difference in image
+        Vec3 unitSphereVector = randomUnitVector();
+        if  (unitSphereVector.dot(normal) > 0){
+            return unitSphereVector;
+        }
+        else
+            return unitSphereVector.negativeSelf();
     }
 
     @Override
