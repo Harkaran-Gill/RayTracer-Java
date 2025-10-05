@@ -4,54 +4,26 @@ import java.io.*;
 
 public class Main {
 
-    static double hitSphere(Ray r, Point3 camCenter, double radius) {
-        Vec3 oc = camCenter.sub(r.getOrigin());
-        double a = r.getDirection().magnitudeSquared();
-        double h = r.getDirection().dot(oc);
-        double c = oc.magnitudeSquared() - radius * radius;
-        double discriminant = h * h - a * c;
-
-        if (discriminant < 0) {
-            return -1.0;
-        }
-        else
-            return (h - Math.sqrt(discriminant))/a;
-    }
-
-    static Color rayColor (Ray r, Hittable world){
-        HitRecord rec = new HitRecord();
-        if (world.hit(r, new Interval(0, Utility.infinity), rec)){
-            return new Color(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1).multiply(0.5);
-        }
-
-        Vec3 unitRay = r.getDirection().unitVector();
-        double a = 0.5 * (unitRay.y() + 1.0);
-
-        // The following are two different return strategies, yet to find which is more efficient
-
-        return new Color(1.0,1.0,1.0)
-                .multiplySelf(1.0-a)
-                .addSelf(new Color(0.5,0.7,1.0)
-                        .multiplySelf(a));
-
-        /*Color temp = new Color();
-        temp.addSelf(white.multiply(1.0-a));
-        temp.addSelf(skyBlue.multiply(a));
-        return temp;*/
-    }
-
     public static void main(String[] args) {
         long start_time =  System.nanoTime();
 
         // World
         HittableList world = new HittableList();
 
-        world.add(new Sphere(new Point3(0,0,-1), 0.5));
-        world.add(new Sphere(new Point3(0,-100.5,-1), 100));
+        Material materialGround = new Lambertian(new Color(0.8,0.8,0.0));
+        Material materialCenter = new Lambertian(new Color(0.1,0.2,0.5));
+        Material materialLeft   = new Metal(new Color(0.8,0.8,0.8));
+        Material materialRight  = new Metal(new Color(0.8,0.6,0.2));
+
+        world.add(new Sphere(new Point3(0,-100.5,-1.0), 100, materialGround));
+        world.add(new Sphere(new Point3(0,0.0,-1.2), 0.5, materialCenter));
+        world.add(new Sphere(new Point3(-1.0,0.0,-1.0), 0.5, materialLeft));
+        world.add(new Sphere(new Point3(1.0,0.0,-1.0), 0.5, materialRight));
+
 
         Camera cam = new Camera();
         cam.aspectRatio = 16.0/9.0;
-        cam.imageWidth = 802;
+        cam.imageWidth = 1920;
         cam.samplesPerPixel = 50;
         cam.maxDepth = 15;
 

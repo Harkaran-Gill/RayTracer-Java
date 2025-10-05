@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Scanner;
 
 public class Camera {
     double aspectRatio  = 16.0/9.0;
@@ -19,15 +20,21 @@ public class Camera {
     private Vec3 pixelDeltaU;
     private Vec3 pixelDeltaV;
 
-    void render (Hittable world) throws IOException{
+    void render (Hittable world){
         initialize();
         System.out.println("P3\n" + imageWidth + ' ' + imageHeight + "\n255\n");
 
         // TODO: Find out if BufferedWriter performs better than PrintWriter here
         PrintWriter pw;
-        BufferedWriter bw;
-        bw = new BufferedWriter(new FileWriter("image.ppm"));
-        pw = new PrintWriter(bw);
+        try {
+            pw = new PrintWriter(
+                    new BufferedWriter(
+                            new FileWriter("image.ppm")));
+        }
+        catch (IOException e) {
+            System.err.println("Error writing image.ppm " + e.getMessage());
+            return;
+        }
 
         pw.println("P3\n" + imageWidth + " "  + imageHeight + "\n255");
 
@@ -95,11 +102,13 @@ public class Camera {
         }
         HitRecord rec = new HitRecord();
         if (world.hit(r, new Interval(0.001, Utility.infinity), rec)){
-            Vec3 direction = Vec3.randomOnHemisphere(rec.normal)
-                    .addSelf(rec.normal);
+            Ray scattered = new Ray();
+            Color attenuation = new Color();
+            if(rec.mat.scatter(r,rec, attenuation, scattered)){
+                return attenuation.multiplySelf(rayColor(scattered, world, depth-1));
+            }
 
-            return rayColor(new Ray(rec.p, direction), world, depth-1)
-                    .multiplySelf(0.5);
+            // return rayColor(new Ray(rec.p, direction), world, depth-1).multiplySelf(0.5);
             //return new Color(direction.x() + 1, direction.y() + 1, direction.z() + 1).multiplySelf(0.5);
         }
 

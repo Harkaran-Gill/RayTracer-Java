@@ -101,6 +101,11 @@ public class Vec3 {
         return divide(this.magnitude());
     }
 
+    public boolean nearZero(){
+        double s = 1e-8;
+        return (Math.abs(e[0]) < s && Math.abs(e[1]) < s && Math.abs(e[2]) < s);
+    }
+
     public double dot(final Vec3 other) {
         return (e[0] * other.e[0]
                 + e[1] * other.e[1]
@@ -140,6 +145,12 @@ public class Vec3 {
         }
         else
             return unitSphereVector.negativeSelf();
+    }
+
+    public static Vec3 reflect(Vec3 v, Vec3 n){
+        // n is assumed to be a unit vector
+        return v.sub(n.multiply(2 * v.dot(n)));
+
     }
 
     @Override
