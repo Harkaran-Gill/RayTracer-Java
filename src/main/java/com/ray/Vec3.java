@@ -153,6 +153,16 @@ public class Vec3 {
 
     }
 
+    public static Vec3 refract(Vec3 uv, Vec3 n, double etaIOverEtaT){
+        Vec3 uvNegative = uv.negative();
+        double cosTheta = Math.min(Math.cos(uvNegative.dot(n)), 1.0);
+        Vec3 rOutPerp = (n.multiply(uvNegative.dot(n))
+                .addSelf(uv))
+                .multiplySelf(etaIOverEtaT); // rOutPerp = etaIOverEtaT * ( uv + (-uv.n)n)
+        Vec3 rOutParallel = n.multiply(-Math.sqrt(1.0 - rOutPerp.magnitudeSquared()));
+        return rOutPerp.addSelf(rOutParallel);
+    }
+
     @Override
     public String toString(){
         return "vec3(" + e[0] + ", " + e[1] + ", " + e[2] + ")";

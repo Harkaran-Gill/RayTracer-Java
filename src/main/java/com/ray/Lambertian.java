@@ -9,7 +9,8 @@ public class Lambertian implements Material{
 
     @Override
     public boolean scatter(Ray incomingRay, HitRecord rec, Color attenuation, Ray scatteredRay ){
-        Vec3 scatterDirection = rec.normal.add(Vec3.randomUnitVector());
+        Vec3 scatterDirection = Vec3.randomUnitVector()
+                .addSelf(rec.normal);
         if (scatterDirection.nearZero())
             scatterDirection = rec.normal;
         scatteredRay.set(rec.p, scatterDirection);

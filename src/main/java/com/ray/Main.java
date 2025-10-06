@@ -12,8 +12,9 @@ public class Main {
 
         Material materialGround = new Lambertian(new Color(0.8,0.8,0.0));
         Material materialCenter = new Lambertian(new Color(0.1,0.2,0.5));
-        Material materialLeft   = new Metal(new Color(0.8,0.8,0.8));
-        Material materialRight  = new Metal(new Color(0.8,0.6,0.2));
+        //Material materialLeft   = new Metal(new Color(0.8,0.8,0.8), 0.0);
+        Material materialLeft = new Dielectric(1.5);
+        Material materialRight  = new Metal(new Color(0.8,0.6,0.2), 0.5);
 
         world.add(new Sphere(new Point3(0,-100.5,-1.0), 100, materialGround));
         world.add(new Sphere(new Point3(0,0.0,-1.2), 0.5, materialCenter));
@@ -23,9 +24,9 @@ public class Main {
 
         Camera cam = new Camera();
         cam.aspectRatio = 16.0/9.0;
-        cam.imageWidth = 1920;
+        cam.imageWidth = 920;
         cam.samplesPerPixel = 50;
-        cam.maxDepth = 15;
+        cam.maxDepth = 8;
 
         try {
             cam.render(world);
