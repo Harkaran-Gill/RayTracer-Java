@@ -5,13 +5,14 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Scanner;
 
 public class Camera {
     double aspectRatio  = 16.0/9.0;
     int imageWidth      = 100;
     int samplesPerPixel = 10;
     int maxDepth = 10;
+
+    double vFov = 90;
 
     private int imageHeight;
     private double pixelSampleScale;
@@ -62,7 +63,9 @@ public class Camera {
 
         // determine Viewport dimensions
         double focalLength = 1.0;
-        double viewportHeight = 2.0;
+        double theta = Math.toRadians(vFov);
+        double h = Math.tan(theta/2);
+        double viewportHeight = 2.0 * h * focalLength;
         double viewportWidth = viewportHeight * ((double)imageWidth / imageHeight);
 
         pixelSampleScale = 1.0/samplesPerPixel;

@@ -119,7 +119,7 @@ public class Vec3 {
     }
 
     public static Vec3 random(){
-        return new Vec3(Utility.randomDouble(), Utility.randomDouble(), Utility.randomDouble());
+        return new Vec3(Utility.randomThreadLocalDouble(), Utility.randomThreadLocalDouble(), Utility.randomThreadLocalDouble());
     }
 
     public static Vec3 random(double min, double max){
@@ -149,17 +149,20 @@ public class Vec3 {
 
     public static Vec3 reflect(Vec3 v, Vec3 n){
         // n is assumed to be a unit vector
+        // v - n * (2 * v.n)
         return v.sub(n.multiply(2 * v.dot(n)));
 
     }
 
-    public static Vec3 refract(Vec3 uv, Vec3 n, double etaIOverEtaT){
-        Vec3 uvNegative = uv.negative();
-        double cosTheta = Math.min(Math.cos(uvNegative.dot(n)), 1.0);
-        Vec3 rOutPerp = (n.multiply(uvNegative.dot(n))
+    public static Vec3 refract(Vec3 uv, Vec3 n, Vec3 uvNegative, double cosTheta, double etaIOverEtaT){
+        // etaIOverEtaT is basically refractive index
+        // Vec3 uvNegative = uv.negative();
+        // double cosTheta = Math.min(uvNegative.dot(n), 1.0);
+        Vec3 rOutPerp = (n.multiply(cosTheta)
                 .addSelf(uv))
                 .multiplySelf(etaIOverEtaT); // rOutPerp = etaIOverEtaT * ( uv + (-uv.n)n)
-        Vec3 rOutParallel = n.multiply(-Math.sqrt(1.0 - rOutPerp.magnitudeSquared()));
+        Vec3 rOutParallel = n.multiply(
+                -Math.sqrt(1.0 - rOutPerp.magnitudeSquared()));
         return rOutPerp.addSelf(rOutParallel);
     }
 
