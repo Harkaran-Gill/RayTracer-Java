@@ -65,12 +65,6 @@ public class Vec3 {
         );
     }
 
-    public void addSelf(Vec3 v) {
-        e[0] += v.x();
-        e[1] += v.y();
-        e[2] += v.z();
-    }
-
     Vec3 sub(final Vec3 other) {
         return new Vec3(
                 e[0] - other.e[0],
