@@ -1,7 +1,5 @@
 package com.ray;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -18,6 +16,13 @@ public class Color extends Vec3 {
         return (Color) super.multiplySelf(t);
     }
 
+    public Color multiplySelf(Vec3 v){
+        e[0] *= v.e[0];
+        e[1] *= v.e[1];
+        e[2] *= v.e[2];
+        return this;
+    }
+
     public Color addSelf(Vec3 v){
         return (Color) super.addSelf(v);
     }
@@ -31,11 +36,28 @@ public class Color extends Vec3 {
         return new Color(result);
     }
 
-    public static void write_color(Color pixel_color, PrintWriter pw) throws IOException {
+    public Color multiply(Vec3 v){
+        return new Color(super.multiply(v));
+    }
+
+    public static Color random(){
+        return new Color(Utility.randomDouble(), Utility.randomDouble(), Utility.randomDouble());
+    }
+
+    public static double linearToGamma(double linear){
+        if(linear > 0)
+            return Math.sqrt(linear);
+        else return 0;
+    }
+
+    public static void write_color(Color pixel_color, PrintWriter pw) {
         var r = pixel_color.x();
         var g = pixel_color.y();
         var b = pixel_color.z();
 
+        r = linearToGamma(r);
+        g = linearToGamma(g);
+        b = linearToGamma(b);
 
         final Interval intensity = new Interval(0, 0.999);
         // Normalize [0,1] to [0. 255]

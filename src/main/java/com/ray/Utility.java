@@ -10,11 +10,12 @@ public abstract class Utility {
         return degrees * pi / 180.0;
     }
 
+    // return number n where n >= 0 && n < 1
     public static double randomDouble(){
-        return Math.random();
+        return randomThreadLocalDouble();
     }
 
-    public static double randomThreadLocalDouble(){
+    private static double randomThreadLocalDouble(){
         return ThreadLocalRandom.current().nextDouble();
     }
 

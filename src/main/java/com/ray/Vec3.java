@@ -87,6 +87,12 @@ public class Vec3 {
         );
     }
 
+    Vec3 multiply(Vec3 other) {
+        return new Vec3(e[0] * other.e[0],
+                e[1] * other.e[1],
+                e[2] * other.e[2]);
+    }
+
     Vec3 divide(double t) {
         return new Vec3(
                 e[0] / t,
@@ -107,16 +113,21 @@ public class Vec3 {
         return divide(this.magnitude());
     }
 
+    public boolean nearZero(){
+        double s = 1e-8;
+        return (Math.abs(e[0]) < s && Math.abs(e[1]) < s && Math.abs(e[2]) < s);
+    }
+
     public double dot(final Vec3 other) {
         return (e[0] * other.e[0]
                 + e[1] * other.e[1]
                 + e[2] * other.e[2]);
     }
 
-    public Vec3 cross(final Vec3 other) {
-        return new Vec3(e[1] * other.e[2] - e[2] * other.e[1],
-                -(e[0] * other.e[2] - e[2] * other.e[0]),
-                e[0] * other.e[1] - e[1] * other.e[0]);
+    public static Vec3 cross(Vec3 v1, Vec3 v2){
+        return new Vec3(v1.e[1] * v2.e[2] - v1.e[2] * v2.e[1],
+                -(v1.e[0] * v2.e[2] - v1.e[2] * v2.e[0]),
+                v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]);
     }
 
     public static Vec3 random(){
@@ -146,6 +157,25 @@ public class Vec3 {
         }
         else
             return unitSphereVector.negativeSelf();
+    }
+
+    public static Vec3 reflect(Vec3 v, Vec3 n){
+        // n is assumed to be a unit vector
+        // v - n * (2 * v.n)
+        return v.sub(n.multiply(2 * v.dot(n)));
+
+    }
+
+    public static Vec3 refract(Vec3 uv, Vec3 n, Vec3 uvNegative, double cosTheta, double etaIOverEtaT){
+        // etaIOverEtaT is basically refractive index
+        // Vec3 uvNegative = uv.negative();
+        // double cosTheta = Math.min(uvNegative.dot(n), 1.0);
+        Vec3 rOutPerp = (n.multiply(cosTheta)
+                .addSelf(uv))
+                .multiplySelf(etaIOverEtaT); // rOutPerp = etaIOverEtaT * ( uv + (-uv.n)n)
+        Vec3 rOutParallel = n.multiply(
+                -Math.sqrt(1.0 - rOutPerp.magnitudeSquared()));
+        return rOutPerp.addSelf(rOutParallel);
     }
 
     @Override

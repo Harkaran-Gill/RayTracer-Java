@@ -7,6 +7,8 @@ public class Ray {
     public Ray(){}
     public Ray(Point3 origin, Vec3 direction) {orig = origin; dir = direction;}
 
+    public void set(Point3 origin, Vec3 direction){this.orig = origin; dir = direction;}
+
     public Point3 getOrigin() {return orig;}
     public Vec3 getDirection() {return dir;}
 

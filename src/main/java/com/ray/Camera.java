@@ -7,27 +7,45 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class Camera {
-    double aspectRatio  = 16.0/9.0;
-    int imageWidth      = 100;
-    int samplesPerPixel = 10;
-    int maxDepth = 10;
+    double aspectRatio     = 16.0/9.0;     // Ratio of image width over height
+    int    imageWidth      = 100;          // Rendered image width in pixel count
+    int    samplesPerPixel = 10;           // Count of random samples for each pixel
+    int    maxDepth        = 10;           // Maximum number of ray bounces into scene
 
-    private int imageHeight;
-    private double pixelSampleScale;
-    private Point3 cameraCenter;
-    private Point3 pixel00Loc;
-    private Vec3 pixelDeltaU;
-    private Vec3 pixelDeltaV;
+    double vFov     = 90;                           // Vertical view angle (field of view)
+    Point3 lookFrom = new Point3(0,0,0);   // Point camera is looking from
+    Point3 lookAt   = new Point3(0,0,-1);  // Point camera is looking at
+    Vec3   vUp      = new Vec3(0,1,0);     // Camera-relative "up" direction
 
-    void render (Hittable world) throws IOException{
+    double defocusAngle = 0;    // Variation angle of rays through each pixel
+    double focusDist    = 10;   // Distance from camera lookFrom point to plane of perfect focus
+
+
+    private int imageHeight;             // Rendered image height
+    private double pixelSampleScale;     // Color scale factor for a sum of pixel samples
+    private Point3 cameraCenter;         // Camera center
+    private Point3 pixel00Loc;           // Location of pixel 0, 0
+    private Vec3 pixelDeltaU;            // Offset to pixel to the right
+    private Vec3 pixelDeltaV;            // Offset to pixel below
+    private Vec3 u, v, w;                // Camera frame basis vectors
+    private Vec3  defocusDiskU;          // Defocus disk horizontal radius
+    private Vec3  defocusDiskV;          // Defocus disk vertical radius
+
+    void render (Hittable world){
         initialize();
         System.out.println("P3\n" + imageWidth + ' ' + imageHeight + "\n255\n");
 
         // TODO: Find out if BufferedWriter performs better than PrintWriter here
         PrintWriter pw;
-        BufferedWriter bw;
-        bw = new BufferedWriter(new FileWriter("image.ppm"));
-        pw = new PrintWriter(bw);
+        try {
+            pw = new PrintWriter(
+                    new BufferedWriter(
+                            new FileWriter("image.ppm")));
+        }
+        catch (IOException e) {
+            System.err.println("Error writing image.ppm " + e.getMessage());
+            return;
+        }
 
         pw.println("P3\n" + imageWidth + " "  + imageHeight + "\n255");
 
@@ -53,36 +71,63 @@ public class Camera {
         // Calculate the image height, and ensure that it's at least 1.
         imageHeight = Math.max(1, (int)(imageWidth / aspectRatio));
 
+        Vec3 lookingDirection = lookFrom.sub(lookAt);
+
+        // Unused Variable
+        // double focalLength = lookingDirection.magnitude();
+
         // determine Viewport dimensions
-        double focalLength = 1.0;
-        double viewportHeight = 2.0;
+
+        double theta = Math.toRadians(vFov);
+        double h = Math.tan(theta/2);
+        double viewportHeight = 2.0 * h * focusDist;
         double viewportWidth = viewportHeight * ((double)imageWidth / imageHeight);
 
         pixelSampleScale = 1.0/samplesPerPixel;
 
-        cameraCenter = new Point3(0,0,0);
+        cameraCenter = lookFrom;
 
-        Vec3 viewportU = new Vec3(viewportWidth, 0, 0);
-        Vec3 viewportV = new Vec3(0, -viewportHeight, 0);
+        // Calculate u, v, w
+        w = lookingDirection.unitVector();
+        u = Vec3.cross(vUp, w).unitVector();
+        v = Vec3.cross(w, u);
+
+        // Calculate the vectors across the horizontal and down the vertical viewport edges.
+        Vec3 viewportU = u.multiply(viewportWidth);
+        Vec3 viewportV = v.negative().multiplySelf(viewportHeight);
 
         pixelDeltaU = viewportU.divide(imageWidth);
         pixelDeltaV = viewportV.divide(imageHeight);
 
-        Point3 viewportUpperLeft =
-                cameraCenter.sub(new Point3(viewportWidth/2, -viewportHeight/2, focalLength));
+        Point3 viewportUpperLeft = cameraCenter.sub(viewportU.divide(2))
+                .subSelf(viewportV.divide(2))
+                .subSelf(w.multiply(focusDist));
+
         pixel00Loc = viewportUpperLeft.add(pixelDeltaU.divide(2))
                 .add(pixelDeltaV.divide(2));
+
+        // Calculate the camera defocus disk basis vectors.
+        double defocusRadius = focusDist * Math.tan(Math.toRadians(defocusAngle/2));
+        defocusDiskU = u.multiply(defocusRadius);
+        defocusDiskV = v.multiply(defocusRadius);
     }
 
     Ray getRay(int i,int j){
+        // Construct a camera ray originating from the defocus disk and directed at a randomly
+        // sampled point around the pixel location i, j.
         Vec3 offset = sampleSquare();
         Point3 sampledPoint = pixel00Loc.add(pixelDeltaU.multiply(i + offset.x()))
                 .addSelf(pixelDeltaV.multiply(j + offset.y()));
 
-        Point3 rayOrigin = cameraCenter;
+        Point3 rayOrigin = (defocusAngle <= 0) ? cameraCenter: defocusDiskSample();
         Vec3 rayDirection = sampledPoint.subSelf(rayOrigin);
 
         return new Ray(rayOrigin, rayDirection);
+    }
+
+    Point3 defocusDiskSample(){
+        Point3 p = Point3.randomInUnitDisk();
+        return cameraCenter.add(defocusDiskU.multiply(p.e[0]).addSelf(defocusDiskV.multiply(p.e[1])));
     }
 
     Vec3 sampleSquare(){
@@ -95,11 +140,13 @@ public class Camera {
         }
         HitRecord rec = new HitRecord();
         if (world.hit(r, new Interval(0.001, Utility.infinity), rec)){
-            Vec3 direction = Vec3.randomOnHemisphere(rec.normal)
-                    .addSelf(rec.normal);
+            Ray scattered = new Ray();
+            Color attenuation = new Color();
+            if(rec.mat.scatter(r,rec, attenuation, scattered)){
+                return attenuation.multiplySelf(rayColor(scattered, world, depth-1));
+            }
 
-            return rayColor(new Ray(rec.p, direction), world, depth-1)
-                    .multiplySelf(0.5);
+            // return rayColor(new Ray(rec.p, direction), world, depth-1).multiplySelf(0.5);
             //return new Color(direction.x() + 1, direction.y() + 1, direction.z() + 1).multiplySelf(0.5);
         }
 

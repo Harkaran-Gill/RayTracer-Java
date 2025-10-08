@@ -3,7 +3,7 @@ package com.ray;
 import java.util.ArrayList;
 
 public class HittableList implements Hittable {
-    ArrayList<Hittable> hittables = new ArrayList<Hittable>();
+    ArrayList<Hittable> hittables = new ArrayList<>();
     public HittableList() {}
 
     public HittableList(Hittable object) { hittables.add(object); }

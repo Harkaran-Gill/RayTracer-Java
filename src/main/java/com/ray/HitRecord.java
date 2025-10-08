@@ -3,14 +3,16 @@ package com.ray;
 public class HitRecord {
     Point3 p;
     Vec3 normal;
+    Material mat;
     double t;
     boolean front_face;
 
     HitRecord() {    }
 
     void set(HitRecord other) {
-        p = (other.p);
-        normal = (other.normal);
+        p = other.p;
+        normal = other.normal;
+        this.mat = other.mat;
         t = other.t;
         front_face = other.front_face;
     }
