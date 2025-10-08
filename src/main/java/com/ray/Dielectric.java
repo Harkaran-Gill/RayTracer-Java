@@ -24,7 +24,7 @@ public class Dielectric implements Material{
 
         // TIR is from denser to rarer material
         // Schlick's approximation is for reflectance that happens from outside the glass
-        if(cannotRefract || reflectance(cosTheta, ri) >  Utility.randomThreadLocalDouble()){
+        if(cannotRefract || reflectance(cosTheta, ri) >  Utility.randomDouble()){
             direction = Vec3.reflect(unitDirection, rec.normal);
         }
         else {
@@ -40,5 +40,6 @@ public class Dielectric implements Material{
         double r0 = (1 - refractiveIndex) / (1 + refractiveIndex);
         r0 = r0 * r0;
         return r0 + (1-r0) * Math.pow((1-cosine), 5);
+        //return -1;
     }
 }

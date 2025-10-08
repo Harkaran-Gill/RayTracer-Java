@@ -81,6 +81,12 @@ public class Vec3 {
         );
     }
 
+    Vec3 multiply(Vec3 other) {
+        return new Vec3(e[0] * other.e[0],
+                e[1] * other.e[1],
+                e[2] * other.e[2]);
+    }
+
     Vec3 divide(double t) {
         return new Vec3(
                 e[0] / t,
@@ -112,14 +118,14 @@ public class Vec3 {
                 + e[2] * other.e[2]);
     }
 
-    public Vec3 cross(final Vec3 other) {
-        return new Vec3(e[1] * other.e[2] - e[2] * other.e[1],
-                -(e[0] * other.e[2] - e[2] * other.e[0]),
-                e[0] * other.e[1] - e[1] * other.e[0]);
+    public static Vec3 cross(Vec3 v1, Vec3 v2){
+        return new Vec3(v1.e[1] * v2.e[2] - v1.e[2] * v2.e[1],
+                -(v1.e[0] * v2.e[2] - v1.e[2] * v2.e[0]),
+                v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]);
     }
 
     public static Vec3 random(){
-        return new Vec3(Utility.randomThreadLocalDouble(), Utility.randomThreadLocalDouble(), Utility.randomThreadLocalDouble());
+        return new Vec3(Utility.randomDouble(), Utility.randomDouble(), Utility.randomDouble());
     }
 
     public static Vec3 random(double min, double max){

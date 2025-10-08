@@ -15,7 +15,7 @@ public abstract class Utility {
         return randomThreadLocalDouble();
     }
 
-    public static double randomThreadLocalDouble(){
+    private static double randomThreadLocalDouble(){
         return ThreadLocalRandom.current().nextDouble();
     }
 

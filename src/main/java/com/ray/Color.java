@@ -36,6 +36,14 @@ public class Color extends Vec3 {
         return new Color(result);
     }
 
+    public Color multiply(Vec3 v){
+        return new Color(super.multiply(v));
+    }
+
+    public static Color random(){
+        return new Color(Utility.randomDouble(), Utility.randomDouble(), Utility.randomDouble());
+    }
+
     public static double linearToGamma(double linear){
         if(linear > 0)
             return Math.sqrt(linear);
