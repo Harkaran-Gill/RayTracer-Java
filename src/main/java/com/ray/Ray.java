@@ -5,9 +5,9 @@ public class Ray {
     Vec3 dir;
 
     public Ray(){}
-    public Ray(Point3 origin, Vec3 direction) {orig = origin; dir = direction;}
+    public Ray(Point3 origin, Vec3 direction) {orig = origin; dir = direction.unitVector();}
 
-    public void set(Point3 origin, Vec3 direction){this.orig = origin; dir = direction;}
+    public void set(Point3 origin, Vec3 direction){this.orig = origin; dir = direction.unitVector();}
 
     public Point3 getOrigin() {return orig;}
     public Vec3 getDirection() {return dir;}

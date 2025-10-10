@@ -16,10 +16,10 @@ public class Sphere implements Hittable {
     @Override
     public boolean hit(Ray r, Interval rayInterval, HitRecord rec) {
         Vec3 oc = center.sub(r.orig);
-        double a = r.dir.magnitudeSquared();
+        //double a = r.dir.magnitudeSquared();
         double h = r.dir.dot(oc);
         double c = oc.magnitudeSquared() - radiusSquared;
-        double discriminant = h * h - a * c;
+        double discriminant = h * h - c;
         if (discriminant < 0.0) {
             return false;
         }
@@ -27,9 +27,9 @@ public class Sphere implements Hittable {
         double sqrtDiscriminant = Math.sqrt(discriminant);
 
 
-        double root = (h - sqrtDiscriminant) / a;
+        double root = (h - sqrtDiscriminant) ;
         if (root <= rayInterval.min || root >= rayInterval.max ) {
-            root = (h + sqrtDiscriminant) / a;
+            root = (h + sqrtDiscriminant) ;
             if (root <= rayInterval.min || root >= rayInterval.max) {
                 return false;
             }

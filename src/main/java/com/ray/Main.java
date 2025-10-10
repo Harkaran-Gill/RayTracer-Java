@@ -10,9 +10,8 @@ public class Main {
         // World
         HittableList world = new HittableList();
         Camera cam = new Camera();
-        scene1(world, cam);
-        //scene2(world, cam);
-
+        //scene1(world, cam);
+        scene2(world, cam);
         cam.render(world);
         long end_time = System.nanoTime();
         System.out.println("Time taken: " + (end_time - start_time)/1e9 + " seconds");
