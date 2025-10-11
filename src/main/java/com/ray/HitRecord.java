@@ -22,7 +22,7 @@ public class HitRecord {
         // NOTE: the parameter `outward_normal` is assumed to have unit length.
 
         front_face = outwardNormal.dot(
-                r.dir) < 0;
+                r.getDirection()) < 0;
         normal = front_face ?
                 outwardNormal.copy()
                 : outwardNormal.negative();

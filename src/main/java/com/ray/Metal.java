@@ -10,13 +10,15 @@ public class Metal implements Material{
     }
 
     public boolean scatter(Ray incomingRay, HitRecord rec, Color attenuation, Ray scatteredRay){
-        Vec3 reflected = Vec3.reflect(incomingRay.dir, rec.normal);
+        // Metals reflect light at the same angle
+        Vec3 reflectedRay = Vec3.reflect(incomingRay.getDirection(), rec.normal);
+
+        // However, we can introduce fuzz, which adds randomness to the reflectedRay
         if (fuzz > 0.0) {
-            reflected = reflected
-                    .addSelf(Vec3.randomUnitVector()
-                            .multiplySelf(fuzz));
+            reflectedRay = reflectedRay
+                    .addSelf(Vec3.randomUnitVector().multiplySelf(fuzz));
         }
-        scatteredRay.set(rec.p, reflected);
+        scatteredRay.set(rec.p, reflectedRay);
         attenuation.set(albedo);
         return true;
     }

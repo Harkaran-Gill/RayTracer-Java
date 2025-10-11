@@ -15,9 +15,9 @@ public class Sphere implements Hittable {
 
     @Override
     public boolean hit(Ray r, Interval rayInterval, HitRecord rec) {
-        Vec3 oc = center.sub(r.orig);
-        double a = r.dir.magnitudeSquared();
-        double h = r.dir.dot(oc);
+        Vec3 oc = center.sub(r.getOrigin());
+        double a = r.getDirection().magnitudeSquared();
+        double h = r.getDirection().dot(oc);
         double c = oc.magnitudeSquared() - radiusSquared;
         double discriminant = h * h - a * c;
         if (discriminant < 0.0) {

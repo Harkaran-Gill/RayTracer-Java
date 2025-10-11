@@ -5,10 +5,12 @@ public class Point3 extends Vec3{
     public Point3(double x, double y, double z) {super(x, y, z);}
     public Point3 (Vec3 vec) {super(vec.x(), vec.y(), vec.z());}
 
+    @Override
     public Point3 addSelf(Vec3 other){
         return (Point3) super.addSelf(other);
     }
 
+    @Override
     public Point3 subSelf(Vec3 other){ return (Point3) super.subSelf(other);}
 
     @Override
@@ -23,7 +25,7 @@ public class Point3 extends Vec3{
         return new Point3(result);
     }
 
-
+    // Point3 utility method(s)
     public static Point3 randomInUnitDisk(){
         while(true){
             Point3 p = new  Point3(Utility.randomDouble(-1,1), Utility.randomDouble(-1,1), 0);
