@@ -3,23 +3,28 @@ package com.ray;
 
 public class Vec3 {
 
-    double[] e = new double[3];
+    private final double[] e = new double[3];
 
 
     Vec3(){}
     Vec3(double x, double y, double z) {e[0] = x; e[1] = y; e[2] = z;}
 
+
+
+    // Getter methods
+    public double x() {return e[0];}
+    public double y() {return e[1];}
+    public double z() {return e[2];}
+    public Vec3 copy(){ return new Vec3(e[0], e[1], e[2]); }
+
+    // Set method
     public void set(Vec3 other){
         e[0] = other.e[0];
         e[1] = other.e[1];
         e[2] = other.e[2];
     }
-    public Vec3 copy(){ return new Vec3(e[0], e[1], e[2]); }
 
-    public double x() {return e[0];}
-    public double y() {return e[1];}
-    public double z() {return e[2];}
-
+    // Vector arithmetic methods
     public Vec3 addSelf(Vec3 other){
         e[0] += other.e[0];
         e[1] += other.e[1];
@@ -38,6 +43,13 @@ public class Vec3 {
         e[0] *= t;
         e[1] *= t;
         e[2] *= t;
+        return this;
+    }
+
+    public Vec3 multiplySelf(Vec3 other){
+        e[0] *= other.e[0];
+        e[1] *= other.e[1];
+        e[2] *= other.e[2];
         return this;
     }
 
@@ -124,6 +136,7 @@ public class Vec3 {
                 v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]);
     }
 
+    // Vector Utility methods
     public static Vec3 random(){
         return new Vec3(Utility.randomDouble(), Utility.randomDouble(), Utility.randomDouble());
     }
@@ -144,7 +157,8 @@ public class Vec3 {
     }
 
     public static Vec3 randomOnHemisphere(Vec3 normal){
-        // Tried using vector in Unit Square and saw marginal difference in image
+        // Returns a random vector within unit hemisphere
+        // from the point of ray-material intersection
         Vec3 unitSphereVector = randomUnitVector();
         if  (unitSphereVector.dot(normal) > 0){
             return unitSphereVector;
@@ -155,15 +169,13 @@ public class Vec3 {
 
     public static Vec3 reflect(Vec3 v, Vec3 n){
         // n is assumed to be a unit vector
-        // v - n * (2 * v.n)
+        // Formula: v - n * (2 * v.n) v = incoming ray, n = normal
         return v.sub(n.multiply(2 * v.dot(n)));
 
     }
 
-    public static Vec3 refract(Vec3 uv, Vec3 n, Vec3 uvNegative, double cosTheta, double etaIOverEtaT){
+    public static Vec3 refract(Vec3 uv, Vec3 n, double cosTheta, double etaIOverEtaT){
         // etaIOverEtaT is basically refractive index
-        // Vec3 uvNegative = uv.negative();
-        // double cosTheta = Math.min(uvNegative.dot(n), 1.0);
         Vec3 rOutPerp = (n.multiply(cosTheta)
                 .addSelf(uv))
                 .multiplySelf(etaIOverEtaT); // rOutPerp = etaIOverEtaT * ( uv + (-uv.n)n)

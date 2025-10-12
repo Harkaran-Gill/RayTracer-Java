@@ -26,7 +26,7 @@ public class Point3 extends Vec3{
         return new Point3(result);
     }
 
-
+    // Point3 utility method(s)
     public static Point3 randomInUnitDisk(){
         while(true){
             Point3 p = new  Point3(Utility.randomDouble(-1,1), Utility.randomDouble(-1,1), 0);

@@ -1,6 +1,8 @@
 package com.ray;
 
 public class Interval {
+    // this is the class used for determining Intervals
+
     double min;
     double max;
     static final Interval empty     = new Interval(Utility.infinity, -Utility.infinity);

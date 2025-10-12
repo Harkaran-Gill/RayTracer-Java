@@ -3,7 +3,11 @@ package com.ray;
 import java.util.ArrayList;
 
 public class HittableList implements Hittable {
+    // This class holds all the objects in the Scene.
+    // using ArrayList for convenience, but might change to classic arrays later
+    // for speed
     ArrayList<Hittable> hittables = new ArrayList<>();
+
     public HittableList() {}
 
     public HittableList(Hittable object) { hittables.add(object); }
@@ -18,6 +22,7 @@ public class HittableList implements Hittable {
         boolean hitAnything = false;
         double closest = rayInterval.max;
 
+        // Looping through all the objects in the scene
         for (Hittable hittable : hittables) {
             if (hittable.hit(r, new Interval(rayInterval.min, closest), tempRec)){
                 hitAnything = true;

@@ -9,8 +9,10 @@ public class Lambertian implements Material{
 
     @Override
     public boolean scatter(Ray incomingRay, HitRecord rec, Color attenuation, Ray scatteredRay ){
-        Vec3 scatterDirection = Vec3.randomUnitVector()
-                .addSelf(rec.normal);
+        // This method randomly scatters rays that hit a Lambertian Material
+
+        Vec3 scatterDirection = Vec3.randomUnitVector()   // Adding random Vector to the normal of the
+                .addSelf(rec.normal);                     // ray-object intersection
         if (scatterDirection.nearZero())
             scatterDirection = rec.normal;
         scatteredRay.set(rec.p, scatterDirection);
