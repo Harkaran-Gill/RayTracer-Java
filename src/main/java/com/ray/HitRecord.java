@@ -7,7 +7,7 @@ public class HitRecord {
     double t;
     boolean front_face;
 
-    HitRecord() {    }
+    HitRecord() {}
 
     void set(HitRecord other) {
         p = other.p;
@@ -16,6 +16,8 @@ public class HitRecord {
         t = other.t;
         front_face = other.front_face;
     }
+
+    void reset() {p = null; normal = null; mat = null; t = 0; front_face = false;}
 
     void setFaceNormal(Ray r, Vec3 outwardNormal) {
         // Sets the hit record normal vector.

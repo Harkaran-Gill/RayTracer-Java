@@ -35,10 +35,4 @@ public class Point3 extends Vec3{
             }
         }
     }
-
-    public void set(Vec3 other) {
-        e[0] = other.x();
-        e[1] = other.y();
-        e[2] = other.z();
-    }
 }

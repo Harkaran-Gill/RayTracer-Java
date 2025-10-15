@@ -1,7 +1,6 @@
 package com.ray;
 
 import java.io.*;
-
 public class Main {
 
     public static void main(String[] args) {
@@ -14,6 +13,7 @@ public class Main {
         // Different Scenes that can be chosen to render
         //scene1(world, cam);
         scene2(world, cam);
+        world.initializeArray();
         cam.render(world);
 
         long end_time = System.nanoTime();
@@ -29,7 +29,7 @@ public class Main {
         // based on a fixed probability (You can change this in the below if statements).
         for (int a = -11; a < 11; a++){
             for (int b = -11; b <11; b++){
-                double chooseMaterial = Utility.randomDouble();
+                double chooseMaterial = 0;//Utility.randomDouble();
                 Point3 center = new Point3(a + 0.9 * Utility.randomDouble(), 0.2, b + 0.9 * Utility.randomDouble());
 
                 if (center.sub(new Point3(4, 0.2, 0)).magnitude() > 0.9){
