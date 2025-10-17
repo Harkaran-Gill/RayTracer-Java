@@ -22,6 +22,15 @@ public class Point3 extends Vec3{
 
     @Override
     public Point3 sub(Vec3 other) {
+        return new Point3(
+                this.x() - other.x(),
+                this.y() - other.y(),
+                this.z() - other.z()
+        );
+    }
+
+
+    public Point3 sub1(Vec3 other) {
         Vec3 result = super.sub(other);
         return new Point3(result);
     }

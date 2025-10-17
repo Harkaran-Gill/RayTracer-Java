@@ -28,9 +28,41 @@ public class Sphere implements Hittable {
 
 
         double root = (h - sqrtDiscriminant) / a;
-        if (root <= rayInterval.min || root >= rayInterval.max ) {
+        if (root <= rayInterval.min || root >= rayInterval.max) {
             root = (h + sqrtDiscriminant) / a;
             if (root <= rayInterval.min || root >= rayInterval.max) {
+                return false;
+            }
+        }
+
+        rec.t = root;
+        rec.p = r.at(root);
+        Vec3 outwardNormal = rec.p
+                .sub(center)
+                .divideSelf(radius);
+        rec.setFaceNormal(r, outwardNormal);
+        rec.mat = mat;
+        return true;
+    }
+
+
+    public boolean hit1(Ray r, int min, int max, HitRecord rec) {
+        Vec3 oc = center.sub(r.getOrigin());
+        double a = r.getDirection().magnitudeSquared();
+        double h = r.getDirection().dot(oc);
+        double c = oc.magnitudeSquared() - radiusSquared;
+        double discriminant = h * h - a * c;
+        if (discriminant < 0.0) {
+            return false;
+        }
+
+        double sqrtDiscriminant = Math.sqrt(discriminant);
+
+
+        double root = (h - sqrtDiscriminant) / a;
+        if (root <= min || root >= max) {
+            root = (h + sqrtDiscriminant) / a;
+            if (root <= min || root >= max) {
                 return false;
             }
         }

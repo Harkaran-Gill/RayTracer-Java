@@ -7,7 +7,6 @@ public class HittableList implements Hittable {
     // using ArrayList for convenience, and then transferring objects to classic
     // array for speed
     private final ArrayList<Hittable> arr = new ArrayList<>();
-    private int length = 0;
     private Hittable[] hittables;
     private HitRecord tempRecord;
 
@@ -19,14 +18,11 @@ public class HittableList implements Hittable {
 
     void add(Hittable object) {
         arr.add(object);
-        length++;
     }
 
     void initializeArray() {
-        hittables = new Hittable[length];
-        for (int i = 0; i < length; i++){
-            hittables[i] = arr.get(i);
-        }
+        hittables = new Hittable[arr.size()];
+        hittables = arr.toArray(hittables);
          clear();
     }
 
@@ -39,8 +35,11 @@ public class HittableList implements Hittable {
         double closest = rayInterval.max;
 
         // Looping through all the objects in the scene
+        Interval interval = new Interval();
         for (Hittable hittable : hittables) {
-            if (hittable.hit(r, new Interval(rayInterval.min, closest), tempRecord)){
+            interval.min = rayInterval.min;
+            interval.max = closest;
+            if (hittable.hit(r, interval, tempRecord)){
                 hitAnything = true;
                 closest = tempRecord.t;
                 rec.set(tempRecord);
