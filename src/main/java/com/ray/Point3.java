@@ -29,12 +29,6 @@ public class Point3 extends Vec3{
         );
     }
 
-
-    public Point3 sub1(Vec3 other) {
-        Vec3 result = super.sub(other);
-        return new Point3(result);
-    }
-
     // Point3 utility method(s)
     public static Point3 randomInUnitDisk(){
         while(true){
