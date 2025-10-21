@@ -1,18 +1,33 @@
 package com.ray;
 
 import java.io.*;
+import java.util.Scanner;
+
 public class Main {
 
     public static void main(String[] args) {
-        long start_time =  System.nanoTime();
-
         // World with all the objects
         HittableList world = new HittableList();
         Camera cam = new Camera();
 
         // Different Scenes that can be chosen to render
-        scene1(world, cam);
-        //scene2(world, cam);
+        System.out.println("Please select a scene by entering the corresponding number: ");
+        System.out.println("1: Scene-1, Simple scene with only 3-Spheres");
+        System.out.println("2: Scene-2, A more complex scene with more than 50 spheres");
+        Scanner sc = new Scanner(System.in);
+        while(true) {
+            int user_choice = sc.nextInt();
+            if (user_choice == 1) {
+                scene1(world, cam);
+                break;
+            } else if (user_choice == 2) {
+                scene2(world, cam);
+                break;
+            } else {
+                System.out.println("Please enter a valid Scene number");
+            }
+        }
+        long start_time =  System.nanoTime();
         world.initializeArray();
         cam.render(world);
 
@@ -20,8 +35,37 @@ public class Main {
         System.out.println("Time taken: " + (end_time - start_time)/1e9 + " seconds");
     }
 
-    // Scene1, the cover scene in the README file
-    public static void scene1(HittableList world, Camera cam) {
+    // Scene1, A simpler scene for faster rendering
+    public static void scene1(HittableList world, Camera cam){
+        Material materialGround = new Lambertian(new Color(0.8,0.8,0.0));
+        Material materialCenter = new Lambertian(new Color(0.1,0.2,0.5));
+        //Material materialLeft   = new Metal(new Color(0.8,0.8,0.8), 0.0);
+        Material materialLeft = new Dielectric(1.5);
+        Material materialBubble = new Dielectric(1.0/1.5);
+        Material materialRight  = new Metal(new Color(0.8,0.6,0.2), 0.5);
+
+        world.add(new Sphere(new Point3(0,-100.5,-1.0), 100, materialGround));
+        world.add(new Sphere(new Point3(0,0.0,-1.2), 0.5, materialCenter));
+        world.add(new Sphere(new Point3(-1.0,0.0,-1.0), 0.5, materialLeft));
+        world.add(new Sphere(new Point3(-1.0,0.0,-1.0), 0.4, materialBubble));
+        world.add(new Sphere(new Point3(1.0,0.0,-1.0), 0.5, materialRight));
+
+        cam.aspectRatio     = 16.0/9.0;
+        cam.imageWidth      = 800;
+        cam.samplesPerPixel = 50;
+        cam.maxDepth        = 10;
+
+        cam.vFov     = 30;
+        cam.lookFrom = new Point3(-2,2,1);
+        cam.lookAt   = new Point3(0,0,-1);
+        cam.vUp      = new Point3(0,1,0);
+
+        cam.defocusAngle = 0.0;
+        cam.focusDist    = 3.4;
+    }
+
+    // Scene2, the cover scene in the README file
+    public static void scene2(HittableList world, Camera cam) {
         Material groundMaterial = new Lambertian(new Color(0.5,0.5,0.5));
         world.add(new Sphere(new Point3(0,-1000,0), 1000, groundMaterial));
 
@@ -81,32 +125,4 @@ public class Main {
 
     }
 
-    // A simpler scene for faster rendering
-    public static void scene2(HittableList world, Camera cam){
-        Material materialGround = new Lambertian(new Color(0.8,0.8,0.0));
-        Material materialCenter = new Lambertian(new Color(0.1,0.2,0.5));
-        //Material materialLeft   = new Metal(new Color(0.8,0.8,0.8), 0.0);
-        Material materialLeft = new Dielectric(1.5);
-        Material materialBubble = new Dielectric(1.0/1.5);
-        Material materialRight  = new Metal(new Color(0.8,0.6,0.2), 0.5);
-
-        world.add(new Sphere(new Point3(0,-100.5,-1.0), 100, materialGround));
-        world.add(new Sphere(new Point3(0,0.0,-1.2), 0.5, materialCenter));
-        world.add(new Sphere(new Point3(-1.0,0.0,-1.0), 0.5, materialLeft));
-        world.add(new Sphere(new Point3(-1.0,0.0,-1.0), 0.4, materialBubble));
-        world.add(new Sphere(new Point3(1.0,0.0,-1.0), 0.5, materialRight));
-
-        cam.aspectRatio     = 16.0/9.0;
-        cam.imageWidth      = 400;
-        cam.samplesPerPixel = 50;
-        cam.maxDepth        = 10;
-
-        cam.vFov     = 30;
-        cam.lookFrom = new Point3(-2,2,1);
-        cam.lookAt   = new Point3(0,0,-1);
-        cam.vUp      = new Point3(0,1,0);
-
-        cam.defocusAngle = 0.0;
-        cam.focusDist    = 3.4;
-    }
 }
