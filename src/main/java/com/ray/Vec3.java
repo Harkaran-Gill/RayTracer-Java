@@ -15,6 +15,8 @@ public class Vec3 {
     public double x() {return e[0];}
     public double y() {return e[1];}
     public double z() {return e[2];}
+    public double getAxis(int axis) {return e[axis];}
+
     public Vec3 copy(){ return new Vec3(e[0], e[1], e[2]); }
 
     // Set method
