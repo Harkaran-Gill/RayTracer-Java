@@ -23,4 +23,8 @@ public abstract class Utility {
         return min + randomThreadLocalDouble() * (max - min);
     }
 
+    public static int randomInt(int min, int max){
+        return ThreadLocalRandom.current().nextInt(min, max);
+    }
+
 }

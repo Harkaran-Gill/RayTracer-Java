@@ -5,9 +5,15 @@ import java.awt.*;
 // Axis Aligned Bounding Boxes
 public class AABB {
     Interval x, y, z;
+    static final AABB empty    = new  AABB(Interval.empty, Interval.empty, Interval.empty);
+    static final AABB universe = new  AABB(Interval.universe, Interval.universe, Interval.universe);
 
     // Default Constructor, Intervals are empty by default
-    AABB() {}
+    AABB() {
+        x = new Interval();
+        y = new Interval();
+        z = new Interval();
+    }
 
     AABB(Interval x, Interval y, Interval z) {
         this.x = x;
@@ -39,6 +45,8 @@ public class AABB {
     public boolean hit(Ray r, Interval rayInterval) {
         Point3 rayOrigin = r.getOrigin();
         Vec3 rayDirection = r.getDirection();
+        double tMin = rayInterval.min;
+        double tMax = rayInterval.max;
 
         for (int axis = 0; axis < 3; axis++) {
             Interval ax = axisInterval(axis);
@@ -48,22 +56,17 @@ public class AABB {
             double t1 = (ax.max - rayOrigin.getAxis(axis)) * rayAxisComponent;
 
             if (t0 < t1) {
-                if (t0 < rayInterval.min) {
-                    rayInterval.min = t0;
-                }
-                if (t1 > rayInterval.max) {
-                    rayInterval.max = t1;
-                }
+                if (t0 > tMin) tMin = t0;
+
+                if (t1 < tMax) tMax = t1;
+
             } else {
-                if (t0 < rayInterval.min) {
-                    rayInterval.min = t0;
-                }
-                if (t1 > rayInterval.max) {
-                    rayInterval.max = t1;
-                }
+                if (t0 > tMin) tMin = t1;
+
+                if (t1 < tMax) tMax = t0;
             }
 
-            if (rayInterval.max <= rayInterval.min)
+            if (tMax <= tMin)
                 return false;
         }
         return true;

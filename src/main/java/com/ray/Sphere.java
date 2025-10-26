@@ -50,5 +50,5 @@ public class Sphere implements Hittable {
     }
 
     @Override
-    public AABB boundingBox() {return bBox; }
+    public AABB boundingBox() { return bBox; }
 }
