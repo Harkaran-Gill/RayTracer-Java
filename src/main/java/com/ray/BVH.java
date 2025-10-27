@@ -8,11 +8,18 @@ public class BVH implements Hittable {
     private Hittable left;
     private Hittable right;
     private AABB bBox;
+    private Interval interval;
 
     BVH(){}
 
     BVH(List<Hittable> objects, int start, int end){
-        int axis = Utility.randomInt(0,2);
+        bBox = AABB.empty;
+        for (int objectIndex= 0; objectIndex < objects.size(); objectIndex++){
+            bBox = new AABB(bBox, objects.get(objectIndex).boundingBox());
+        }
+
+        int axis = bBox.longestAxis();
+
         Comparator<Hittable> comparator = (axis == 0) ? boxCompare(0) :
                 (axis == 1) ? boxCompare(1) :
                         boxCompare(2);
@@ -33,6 +40,7 @@ public class BVH implements Hittable {
             right = new BVH(objects, mid, end);
         }
         bBox = new AABB(left.boundingBox(), right.boundingBox());
+        interval = new Interval();
     }
 
     BVH(HittableList list){
@@ -44,7 +52,9 @@ public class BVH implements Hittable {
             return false;
 
         boolean hitLeft = left.hit(r, rayInterval, rec);
-        boolean hitRight = right.hit(r,new Interval(rayInterval.min, hitLeft ? rec.t : rayInterval.max), rec);
+        interval.min = rayInterval.min;
+        interval.max = hitLeft ? rec.t : rayInterval.max;
+        boolean hitRight = right.hit(r, interval, rec);
 
         return hitLeft || hitRight;
     }
@@ -53,14 +63,10 @@ public class BVH implements Hittable {
 
     private Comparator<Hittable> boxCompare(int axis){
         return (a, b) -> {
-            var aBox = a.boundingBox();
-            var bBox = b.boundingBox();
-            var aAxisInterval = aBox.axisInterval(axis);
-            var bAxisInterval = bBox.axisInterval(axis);
+            var aAxisInterval = a.boundingBox().axisInterval(axis);
+            var bAxisInterval = b.boundingBox().axisInterval(axis);
 
-            if(aAxisInterval.min < bAxisInterval.min) return -1;
-            else if(aAxisInterval.min > bAxisInterval.min) return 1;
-            else  return 0;
+            return Double.compare(aAxisInterval.min, bAxisInterval.min);
         };
     }
 

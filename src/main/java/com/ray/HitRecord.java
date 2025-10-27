@@ -23,11 +23,10 @@ public class HitRecord {
         // Sets the hit record normal vector.
         // NOTE: the parameter `outward_normal` is assumed to have unit length.
 
-        front_face = outwardNormal.dot(
-                r.getDirection()) < 0;
+        front_face = outwardNormal.dot(r.getDirection()) < 0;
         normal = front_face ?
-                outwardNormal.copy()
-                : outwardNormal.negative();
+                outwardNormal
+                : outwardNormal.negativeSelf();
     }
 
 }

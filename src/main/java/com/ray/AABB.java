@@ -71,5 +71,12 @@ public class AABB {
         }
         return true;
     }
+
+    public int longestAxis(){
+        if(x.size() > y.size())
+            return x.size() > z.size() ? 0 : 2;
+        else
+            return y.size() > z.size() ? 1 : 2;
+    }
 }
 
