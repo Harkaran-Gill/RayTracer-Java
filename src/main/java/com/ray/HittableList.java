@@ -41,9 +41,9 @@ public class HittableList implements Hittable {
         double closest = rayInterval.max;
 
         // Looping through all the objects in the scene
-        Interval interval = new Interval();
+        Interval interval = new Interval(); // Interval in which a ray can hit the object
+        interval.min = rayInterval.min;     // min does not change in the loop, so keep it out
         for (Hittable hittable : arr) {
-            interval.min = rayInterval.min;
             interval.max = closest;
             if (hittable.hit(r, interval, tempRecord)){
                 hitAnything = true;

@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+// This is a BVH Node class, we build a binary tree here to enable Binary search
 public class BVH implements Hittable {
     private Hittable left;
     private Hittable right;
     private AABB bBox;
     private Interval interval;
 
+    // Default constructor
     BVH(){}
 
+    // Custom constructor, build a binary
     BVH(List<Hittable> objects, int start, int end){
         bBox = AABB.empty;
         for (int objectIndex= 0; objectIndex < objects.size(); objectIndex++){

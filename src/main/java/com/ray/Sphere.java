@@ -1,12 +1,13 @@
 package com.ray;
 
 public class Sphere implements Hittable {
-    private final Point3 center;
-    private final double radius;
-    private final double radiusSquared;
-    private final Material mat;
-    private final AABB bBox;
+    private final Point3 center;        // Center of the Sphere
+    private final double radius;        // Radius if the Sphere
+    private final double radiusSquared; // Radius squared (Reduces redundant calculations)
+    private final Material mat;         // The material of sphere, responsible for HOW a ray reflected/refracted
+    private final AABB bBox;            // The bounding box around the sphere
 
+    // Constructor
     public Sphere(Point3 center, double radius, Material mat) {
         this.center = center;
         this.radius = Math.max(0, radius);
@@ -17,6 +18,9 @@ public class Sphere implements Hittable {
         bBox = new AABB(center.sub(radiusVec), center.add(radiusVec));
     }
 
+    // The actual method that calculates intersection with Spheres present in the scene
+    // We are just solving a simplified quadratic equation to find the t(time) at which ray
+    // intersects with the sphere
     @Override
     public boolean hit(Ray r, Interval rayInterval, HitRecord rec) {
         Vec3 oc = center.sub(r.getOrigin());
@@ -39,6 +43,7 @@ public class Sphere implements Hittable {
             }
         }
 
+        // Storing the information about the ray-sphere intersection in the HitRecord object
         rec.t = root;
         rec.p = r.at(root);
         Vec3 outwardNormal = rec.p
@@ -49,6 +54,7 @@ public class Sphere implements Hittable {
         return true;
     }
 
+    // Returns the box that encloses the sphere
     @Override
     public AABB boundingBox() { return bBox; }
 }
