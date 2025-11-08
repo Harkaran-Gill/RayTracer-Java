@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Camera {
     protected int TILE_SIZE = 32;
-    private int nThreads    = 1;
+    public int nThreads    = 0;
     private ExecutorService executor;
 
     double aspectRatio     = 16.0/9.0;     // Ratio of image width over height
@@ -43,6 +43,7 @@ public class Camera {
     private BufferedImage img;
 
     void render (Hittable world){
+        initialize();
         System.out.println("P3\n" + imageWidth + ' ' + imageHeight + "\n255\n");
 
         // TODO: Find out if BufferedWriter performs better than PrintWriter here
@@ -103,7 +104,7 @@ public class Camera {
                     renderTile(world, x0, y0, x1, y1);
                     int done = tilesDone.incrementAndGet();
                     //if (done % Math.max(1, totalTiles/20) == 0)
-                        System.out.printf("Tiles rendered %d/%d \n", done, totalTiles);
+                        System.out.printf("Tiles rendered %d/%d \r", done, totalTiles);
                     return null;
                 });
             }
@@ -144,7 +145,7 @@ public class Camera {
                         pixelColor.addSelf(rayColor(r, world, maxDepth));
                     }
                 }
-                 synchronized (img){
+                 {
                     Color.writePNG(img, pixelColor.multiplySelf(pixelSampleScale), i, j);
                 }
             }
@@ -199,7 +200,7 @@ public class Camera {
         img = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
 
         // initialize Executor service and nThreads(if not set manually by the user)
-        if(nThreads == 1)
+        if(nThreads == 0)
             nThreads = Runtime.getRuntime().availableProcessors();
         executor = Executors.newFixedThreadPool(nThreads);
     }

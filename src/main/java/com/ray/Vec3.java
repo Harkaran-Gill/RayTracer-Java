@@ -101,6 +101,11 @@ public class Vec3 {
                 e[2] * other.e[2]);
     }
 
+    Point3 multiplyOutPoint(double t){
+        return new Point3(e[0] * t,
+                e[1] * t,
+                e[2] * t);
+    }
     Vec3 divide(double t) {
         return new Vec3(
                 e[0] / t,

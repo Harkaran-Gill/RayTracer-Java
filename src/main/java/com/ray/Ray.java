@@ -17,6 +17,7 @@ public class Ray {
 
     // Determine where the ray is at the given Real Number
     public Point3 at(double t){
-        return orig.add(dir.multiply(t));
+        //return orig.add(dir.multiply(t));
+        return dir.multiplyOutPoint(t).addSelf(orig);
     }
 }
