@@ -29,4 +29,12 @@ public class HitRecord {
                 : outwardNormal.negativeSelf();
     }
 
+    public void copyFrom(HitRecord other) {
+        this.t = other.t;
+        this.p = other.p;
+        this.normal = other.normal;
+        this.front_face = other.front_face;
+        this.mat = other.mat;
+    }
+
 }

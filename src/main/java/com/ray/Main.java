@@ -16,7 +16,7 @@ public class Main {
         System.out.println("2: Scene-2, A more complex scene with more than 50 spheres");
         Scanner sc = new Scanner(System.in);
         while(true) {
-            int user_choice = sc.nextInt();
+            int user_choice = 1;//sc.nextInt();
             if (user_choice == 1) {
                 scene1(world, cam);
                 break;
@@ -30,7 +30,7 @@ public class Main {
         long start_time =  System.nanoTime();
         world = new HittableList(new BVH(world));
         //world.initializeArray();
-        cam.render(world);
+        cam.multiThreadRender(world);
 
         long end_time = System.nanoTime();
         System.out.println("Time taken: " + (end_time - start_time)/1e9 + " seconds");

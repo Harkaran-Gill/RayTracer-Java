@@ -1,11 +1,21 @@
 package com.ray;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Camera {
+    protected int TILE_SIZE = 32;
+    private int nThreads    = 1;
+    private ExecutorService executor;
+
     double aspectRatio     = 16.0/9.0;     // Ratio of image width over height
     int    imageWidth      = 100;          // Rendered image width in pixel count
     int    samplesPerPixel = 10;           // Count of random samples for each pixel
@@ -30,8 +40,9 @@ public class Camera {
     private Vec3  defocusDiskU;          // Defocus disk horizontal radius
     private Vec3  defocusDiskV;          // Defocus disk vertical radius
 
+    private BufferedImage img;
+
     void render (Hittable world){
-        initialize();
         System.out.println("P3\n" + imageWidth + ' ' + imageHeight + "\n255\n");
 
         // TODO: Find out if BufferedWriter performs better than PrintWriter here
@@ -59,11 +70,85 @@ public class Camera {
                     Ray r = getRay(i, j);
                     pixelColor.addSelf(rayColor(r, world, maxDepth));
                 }
-
-                Color.write_color(pixelColor.multiplySelf(pixelSampleScale), pw);
+                pixelColor.multiplySelf(pixelSampleScale);
+                //Color.write_color(pixelColor, pw);
+                Color.writePNG(img, pixelColor, i, j);
             }
         }
+        try {
+            ImageIO.write(img, "png", new File("render.png"));
+        }
+        catch (IOException e) {
+            System.err.println("Error writing render.png " + e.getMessage());
+        }
         pw.close();
+    }
+
+    void multiThreadRender(Hittable world){
+        initialize();
+        List<Callable<Void>> tasks = new ArrayList<>();
+        AtomicInteger tilesDone = new AtomicInteger(0);
+        int tilesX = (imageWidth + TILE_SIZE - 1) / TILE_SIZE;
+        int tilesY = (imageHeight + TILE_SIZE - 1) / TILE_SIZE;
+        int totalTiles = tilesX * tilesY;
+
+        for (int ty = 0; ty < tilesY; ty++) {
+            for (int tx = 0; tx < tilesX; tx++) {
+                final int x0 = tx * TILE_SIZE;
+                final int y0 = ty * TILE_SIZE;
+                final int x1 = Math.min(imageWidth, x0+TILE_SIZE);
+                final int y1 = Math.min(imageHeight, y0+TILE_SIZE);
+
+                tasks.add(() -> {
+                    renderTile(world, x0, y0, x1, y1);
+                    int done = tilesDone.incrementAndGet();
+                    //if (done % Math.max(1, totalTiles/20) == 0)
+                        System.out.printf("Tiles rendered %d/%d \n", done, totalTiles);
+                    return null;
+                });
+            }
+        }
+
+        boolean terminated = true;
+        try {
+            executor.invokeAll(tasks);
+            executor.shutdown();
+            terminated = executor.awaitTermination(30, TimeUnit.MINUTES);
+        }
+        catch (InterruptedException e) {
+            System.err.println("Program Interrupted" + e.getMessage());
+            System.exit(1);
+        }
+        if (!terminated){
+            System.out.println("Program Timed Out");
+        }
+
+        try {
+            ImageIO.write(img, "png", new File("render.png"));
+        }
+        catch (IOException e) {
+            System.err.println("Error writing render.png " + e.getMessage());
+        }
+        System.out.println("Wrote render.png");
+    }
+
+    void renderTile(Hittable world, int x0, int y0, int x1, int y1){
+        for (int j = y0; j < y1; j++){
+            for (int i = x0; i < x1; i++){
+                Color pixelColor = new Color(0,0,0);
+
+                // This is for producing multiple rays per pixel
+                for (int samples = 0; samples < samplesPerPixel; samples++) {
+                    Ray r = getRay(i, j);
+                     {
+                        pixelColor.addSelf(rayColor(r, world, maxDepth));
+                    }
+                }
+                 synchronized (img){
+                    Color.writePNG(img, pixelColor.multiplySelf(pixelSampleScale), i, j);
+                }
+            }
+        }
     }
 
     private void initialize(){
@@ -109,6 +194,14 @@ public class Camera {
         double defocusRadius = focusDist * Math.tan(Math.toRadians(defocusAngle/2));
         defocusDiskU = u.multiply(defocusRadius);
         defocusDiskV = v.multiply(defocusRadius);
+
+
+        img = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
+
+        // initialize Executor service and nThreads(if not set manually by the user)
+        if(nThreads == 1)
+            nThreads = Runtime.getRuntime().availableProcessors();
+        executor = Executors.newFixedThreadPool(nThreads);
     }
 
     Ray getRay(int i,int j){

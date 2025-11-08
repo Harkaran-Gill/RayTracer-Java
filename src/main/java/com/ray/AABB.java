@@ -5,8 +5,8 @@ import java.awt.*;
 // Axis Aligned Bounding Boxes
 public class AABB {
     Interval x, y, z;
-    static final AABB empty    = new  AABB(Interval.empty, Interval.empty, Interval.empty);
-    static final AABB universe = new  AABB(Interval.universe, Interval.universe, Interval.universe);
+    static final AABB empty    = new AABB(Interval.empty, Interval.empty, Interval.empty);
+    static final AABB universe = new AABB(Interval.universe, Interval.universe, Interval.universe);
 
     // Default Constructor, Intervals are empty by default
     AABB() {

@@ -1,5 +1,6 @@
 package com.ray;
 
+import java.awt.image.BufferedImage;
 import java.io.PrintWriter;
 
 public class Color extends Vec3 {
@@ -71,5 +72,23 @@ public class Color extends Vec3 {
         int bByte = (int)(256 * intensity.clamp(b));
 
         pw.write(rByte + " " + gByte + " " + bByte + "\n");
+    }
+    static void writePNG(BufferedImage img, Color pixel_color, int x, int y) {
+        var r = pixel_color.x();
+        var g = pixel_color.y();
+        var b = pixel_color.z();
+
+        r = linearToGamma(r);
+        g = linearToGamma(g);
+        b = linearToGamma(b);
+
+        final Interval intensity = new Interval(0, 0.999);
+        // Normalize [0,1] to [0. 255]
+        int rByte = (int)(256 * intensity.clamp(r));
+        int gByte = (int)(256 * intensity.clamp(g));
+        int bByte = (int)(256 * intensity.clamp(b));
+
+        int rgb = (rByte << 16) | (gByte << 8) | bByte;
+        img.setRGB(x, y, rgb);
     }
 }

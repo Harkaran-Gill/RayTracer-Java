@@ -6,13 +6,9 @@ import java.util.List;
 
 // This is a BVH Node class, we build a binary tree here to enable Binary search
 public class BVH implements Hittable {
-    private Hittable left;
-    private Hittable right;
+    private final Hittable left;
+    private final Hittable right;
     private AABB bBox;
-    private Interval interval;
-
-    // Default constructor
-    BVH(){}
 
     // Custom constructor, build a binary
     BVH(List<Hittable> objects, int start, int end){
@@ -43,7 +39,7 @@ public class BVH implements Hittable {
             right = new BVH(objects, mid, end);
         }
         bBox = new AABB(left.boundingBox(), right.boundingBox());
-        interval = new Interval();
+        //interval = new Interval();
     }
 
     BVH(HittableList list){
@@ -54,12 +50,22 @@ public class BVH implements Hittable {
         if (!bBox.hit(r, rayInterval))
             return false;
 
-        boolean hitLeft = left.hit(r, rayInterval, rec);
-        interval.min = rayInterval.min;
-        interval.max = hitLeft ? rec.t : rayInterval.max;
-        boolean hitRight = right.hit(r, interval, rec);
+        HitRecord leftRec = new HitRecord();
+        HitRecord rightRec = new HitRecord();
 
-        return hitLeft || hitRight;
+        boolean hitLeft = left.hit(r, rayInterval, leftRec);
+        boolean hitRight = right.hit(r, new Interval(rayInterval.min, hitLeft ? leftRec.t : rayInterval.max), rightRec);
+
+        if (hitLeft && hitRight) {
+            rec.copyFrom(leftRec.t < rightRec.t ? leftRec : rightRec);
+        } else if (hitLeft) {
+            rec.copyFrom(leftRec);
+        } else if (hitRight) {
+            rec.copyFrom(rightRec);
+        } else {
+            return false;
+        }
+        return true;
     }
 
     public AABB boundingBox(){return bBox;}

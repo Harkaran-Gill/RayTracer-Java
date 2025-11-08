@@ -12,10 +12,9 @@ public class HittableList implements Hittable {
     private HitRecord tempRecord;
     private AABB bBox = new AABB();
 
-    public HittableList() { tempRecord = new HitRecord(); }
+    public HittableList() {  }
 
     public HittableList(Hittable object) {
-        tempRecord = new HitRecord();
         arr.add(object);
     }
 
@@ -34,9 +33,9 @@ public class HittableList implements Hittable {
 
     @Override
     public boolean hit(Ray r, Interval rayInterval, HitRecord rec) {
-        // tempRecord.reset();
+        //tempRecord.reset();
         // Might need this later in the project, for now it works without a reset
-
+        HitRecord tempRecord = new HitRecord();
         boolean hitAnything = false;
         double closest = rayInterval.max;
 
