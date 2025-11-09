@@ -1,14 +1,14 @@
 package com.ray;
 
 public class Sphere implements Hittable {
-    private final Point3 center;        // Center of the Sphere
+    private final Vec3 center;        // Center of the Sphere
     private final double radius;        // Radius if the Sphere
     private final double radiusSquared; // Radius squared (Reduces redundant calculations)
     private final Material mat;         // The material of sphere, responsible for HOW a ray reflected/refracted
     private final AABB bBox;            // The bounding box around the sphere
 
     // Constructor
-    public Sphere(Point3 center, double radius, Material mat) {
+    public Sphere(Vec3 center, double radius, Material mat) {
         this.center = center;
         this.radius = Math.max(0, radius);
         this.mat = mat;

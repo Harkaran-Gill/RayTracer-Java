@@ -22,18 +22,18 @@ public class Camera {
     int    maxDepth        = 10;           // Maximum number of ray bounces into scene
 
     double vFov     = 90;                           // Vertical view angle (field of view)
-    Point3 lookFrom = new Point3(0,0,0);   // Point camera is looking from
-    Point3 lookAt   = new Point3(0,0,-1);  // Point camera is looking at
+    Vec3 lookFrom = new Vec3(0,0,0);   // Vec camera is looking from
+    Vec3 lookAt   = new Vec3(0,0,-1);  // Vec camera is looking at
     Vec3   vUp      = new Vec3(0,1,0);     // Camera-relative "up" direction
 
     double defocusAngle = 0;    // Variation angle of rays through each pixel
-    double focusDist    = 10;   // Distance from camera lookFrom point to plane of perfect focus
+    double focusDist    = 10;   // Distance from camera lookFrom Vec to plane of perfect focus
 
 
     private int imageHeight;             // Rendered image height
-    private double pixelSampleScale;     // Color scale factor for a sum of pixel samples
-    private Point3 cameraCenter;         // Camera center
-    private Point3 pixel00Loc;           // Location of pixel 0, 0
+    private double pixelSampleScale;     // Vec3 scale factor for a sum of pixel samples
+    private Vec3 cameraCenter;         // Camera center
+    private Vec3 pixel00Loc;           // Location of pixel 0, 0
     private Vec3 pixelDeltaU;            // Offset to pixel to the right
     private Vec3 pixelDeltaV;            // Offset to pixel below
     private Vec3 u, v, w;                // Camera frame basis vectors
@@ -41,49 +41,6 @@ public class Camera {
     private Vec3  defocusDiskV;          // Defocus disk vertical radius
 
     private BufferedImage img;
-
-    void render (Hittable world){
-        initialize();
-        System.out.println("P3\n" + imageWidth + ' ' + imageHeight + "\n255\n");
-
-        // TODO: Find out if BufferedWriter performs better than PrintWriter here
-        PrintWriter pw;
-        try {
-            pw = new PrintWriter(
-                    new BufferedWriter(
-                            new FileWriter("image.ppm")));
-        }
-        catch (IOException e) {
-            System.err.println("Error writing image.ppm " + e.getMessage());
-            return;
-        }
-
-        pw.println("P3\n" + imageWidth + " "  + imageHeight + "\n255");
-
-        for (int j = 0; j < imageHeight; j++) {  // Rows
-            System.out.print("Scanlines remaining: " + (imageHeight-j) + "\r");
-            System.out.flush();
-            for (int i = 0; i < imageWidth; i++) { // Columns
-                Color pixelColor = new Color(0,0,0);
-
-                // This is for producing multiple rays per pixel
-                for (int samples = 0; samples < samplesPerPixel; samples++) {
-                    Ray r = getRay(i, j);
-                    pixelColor.addSelf(rayColor(r, world, maxDepth));
-                }
-                pixelColor.multiplySelf(pixelSampleScale);
-                //Color.write_color(pixelColor, pw);
-                Color.writePNG(img, pixelColor, i, j);
-            }
-        }
-        try {
-            ImageIO.write(img, "png", new File("render.png"));
-        }
-        catch (IOException e) {
-            System.err.println("Error writing render.png " + e.getMessage());
-        }
-        pw.close();
-    }
 
     void multiThreadRender(Hittable world){
         initialize();
@@ -136,7 +93,7 @@ public class Camera {
     void renderTile(Hittable world, int x0, int y0, int x1, int y1){
         for (int j = y0; j < y1; j++){
             for (int i = x0; i < x1; i++){
-                Color pixelColor = new Color(0,0,0);
+                Vec3 pixelColor = new Vec3(0,0,0);
 
                 // This is for producing multiple rays per pixel
                 for (int samples = 0; samples < samplesPerPixel; samples++) {
@@ -184,7 +141,7 @@ public class Camera {
         pixelDeltaU = viewportU.divide(imageWidth);
         pixelDeltaV = viewportV.divide(imageHeight);
 
-        Point3 viewportUpperLeft = cameraCenter.sub(viewportU.divide(2))
+        Vec3 viewportUpperLeft = cameraCenter.sub(viewportU.divide(2))
                 .subSelf(viewportV.divide(2))
                 .subSelf(w.multiply(focusDist));
 
@@ -207,34 +164,34 @@ public class Camera {
 
     Ray getRay(int i,int j){
         // Construct a camera ray originating from the defocus disk and directed at a randomly
-        // sampled point around the pixel location i, j.
+        // sampled Vec around the pixel location i, j.
         Vec3 offset = sampleSquare();
-        Point3 sampledPoint = pixel00Loc.add(pixelDeltaU.multiply(i + offset.x()))
-                .addSelf(pixelDeltaV.multiply(j + offset.y()));
+        Vec3 sampledVec = (pixelDeltaU.multiply(i + offset.x()))
+                .addSelf(pixelDeltaV.multiply(j + offset.y())).addSelf(pixel00Loc);
 
-        Point3 rayOrigin = (defocusAngle <= 0) ? cameraCenter: defocusDiskSample();
-        Vec3 rayDirection = sampledPoint.subSelf(rayOrigin);
+        Vec3 rayOrigin = (defocusAngle <= 0) ? cameraCenter: defocusDiskSample();
+        Vec3 rayDirection = sampledVec.subSelf(rayOrigin);
 
         return new Ray(rayOrigin, rayDirection);
     }
 
-    // getting a random point from the Camera 'lens', this enables depth of field
-    Point3 defocusDiskSample(){
-        Point3 p = Point3.randomInUnitDisk();
+    // getting a random Vec from the Camera 'lens', this enables depth of field
+    Vec3 defocusDiskSample(){
+        Vec3 p = Vec3.randomInUnitDisk();
         return cameraCenter.add(defocusDiskU.multiply(p.x()).addSelf(defocusDiskV.multiply(p.y())));
     }
 
-    // getting a random point within the pixel's square
+    // getting a random Vec within the pixel's square
     Vec3 sampleSquare(){
         return new Vec3 (Utility.randomDouble(-0.5,0.5), Utility.randomDouble(-0.5, 0.5), 0);
     }
 
     // Method used to colour rays and determine the colour of pixels
-    Color rayColor(Ray r, Hittable world, int depth) {
+    Vec3 rayColor(Ray r, Hittable world, int depth) {
         // Base Case 1
         // Returning BLACK colour if number of ray bounces exceeds set threshold
         if (depth <= 0) {
-            return new Color(0,0,0);
+            return new Vec3(0,0,0);
         }
 
         // Creating a HitRecord, serves as an output parameter
@@ -242,7 +199,7 @@ public class Camera {
         if (world.hit(r, new Interval(0.001, Utility.infinity), rec)){
             // scattered and attenuation are also output parameters
             Ray scattered = new Ray();
-            Color attenuation = new Color();
+            Vec3 attenuation = new Vec3();
             if(rec.mat.scatter(r,rec, attenuation, scattered)){
                 // Recursive call to compute ray bounces between objects
                 return attenuation.multiplySelf(rayColor(scattered, world, depth-1));
@@ -254,8 +211,8 @@ public class Camera {
 
         // Base Case 2
         // Return the colour of sky(which is a linear gradient) if ray doesn't hit any object
-        return new Color(1.0,1.0,1.0).multiplySelf(1.0-a)
+        return new Vec3(1.0,1.0,1.0).multiplySelf(1.0-a)
                 .addSelf
-                        (new Color(0.5,0.7,1.0).multiplySelf(a));
+                        (new Vec3(0.5,0.7,1.0).multiplySelf(a));
     }
 }

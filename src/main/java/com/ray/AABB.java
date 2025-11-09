@@ -23,7 +23,7 @@ public class AABB {
     }
 
     // Custom constructor, initialize values based on the extremes of the points
-    AABB(Point3 a, Point3 b) {
+    AABB(Vec3 a, Vec3 b) {
         // Treat the two points a and b as extrema for the bounding box, so we don't require a
         // particular minimum/maximum coordinate order.
 
@@ -51,7 +51,7 @@ public class AABB {
     // It is much less computationally intensive to calculate a box-hit that calculating a sphere hit
     // therefore this method reduces a lot of call that would have been made to Sphere.hit()
     public boolean hit(Ray r, Interval rayInterval) {
-        Point3 rayOrigin = r.getOrigin();
+        Vec3 rayOrigin = r.getOrigin();
         Vec3 rayDirection = r.getDirection();
         double tMin = rayInterval.min;
         double tMax = rayInterval.max;

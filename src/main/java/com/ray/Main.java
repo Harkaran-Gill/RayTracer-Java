@@ -16,7 +16,7 @@ public class Main {
         System.out.println("2: Scene-2, A more complex scene with more than 50 spheres");
         Scanner sc = new Scanner(System.in);
         while(true) {
-            int user_choice = 2;//sc.nextInt();
+            int user_choice = 1;//sc.nextInt();
             if (user_choice == 1) {
                 scene1(world, cam);
                 break;
@@ -40,18 +40,18 @@ public class Main {
 
     // Scene1, A simpler scene for faster rendering
     public static void scene1(HittableList world, Camera cam){
-        Material materialGround = new Lambertian(new Color(0.8,0.8,0.0));
-        Material materialCenter = new Lambertian(new Color(0.1,0.2,0.5));
-        //Material materialLeft   = new Metal(new Color(0.8,0.8,0.8), 0.0);
+        Material materialGround = new Lambertian(new Vec3(0.8,0.8,0.0));
+        Material materialCenter = new Lambertian(new Vec3(0.1,0.2,0.5));
+        //Material materialLeft   = new Metal(new Vec3(0.8,0.8,0.8), 0.0);
         Material materialLeft = new Dielectric(1.5);
         Material materialBubble = new Dielectric(1.0/1.5);
-        Material materialRight  = new Metal(new Color(0.8,0.6,0.2), 0.5);
+        Material materialRight  = new Metal(new Vec3(0.8,0.6,0.2), 0.5);
 
-        world.add(new Sphere(new Point3(0,-100.5,-1.0), 100, materialGround));
-        world.add(new Sphere(new Point3(0,0.0,-1.2), 0.5, materialCenter));
-        world.add(new Sphere(new Point3(-1.0,0.0,-1.0), 0.5, materialLeft));
-        world.add(new Sphere(new Point3(-1.0,0.0,-1.0), 0.4, materialBubble));
-        world.add(new Sphere(new Point3(1.0,0.0,-1.0), 0.5, materialRight));
+        world.add(new Sphere(new Vec3(0,-100.5,-1.0), 100, materialGround));
+        world.add(new Sphere(new Vec3(0,0.0,-1.2), 0.5, materialCenter));
+        world.add(new Sphere(new Vec3(-1.0,0.0,-1.0), 0.5, materialLeft));
+        world.add(new Sphere(new Vec3(-1.0,0.0,-1.0), 0.4, materialBubble));
+        world.add(new Sphere(new Vec3(1.0,0.0,-1.0), 0.5, materialRight));
 
         cam.aspectRatio     = 16.0/9.0;
         cam.imageWidth      = 800;
@@ -59,9 +59,9 @@ public class Main {
         cam.maxDepth        = 10;
 
         cam.vFov     = 30;
-        cam.lookFrom = new Point3(-2,2,1);
-        cam.lookAt   = new Point3(0,0,-1);
-        cam.vUp      = new Point3(0,1,0);
+        cam.lookFrom = new Vec3(-2,2,1);
+        cam.lookAt   = new Vec3(0,0,-1);
+        cam.vUp      = new Vec3(0,1,0);
 
         cam.defocusAngle = 0.0;
         cam.focusDist    = 3.4;
@@ -69,28 +69,28 @@ public class Main {
 
     // Scene2, the cover scene in the README file
     public static void scene2(HittableList world, Camera cam) {
-        Material groundMaterial = new Lambertian(new Color(0.5,0.5,0.5));
-        world.add(new Sphere(new Point3(0,-1000,0), 1000, groundMaterial));
+        Material groundMaterial = new Lambertian(new Vec3(0.5,0.5,0.5));
+        world.add(new Sphere(new Vec3(0,-1000,0), 1000, groundMaterial));
 
         // Loops to determine the position of the spheres, the material is chosen randomly
         // based on a fixed probability (You can change this in the below if statements).
         for (int a = -11; a < 11; a++){
             for (int b = -11; b <11; b++){
                 double chooseMaterial = Utility.randomDouble();
-                Point3 center = new Point3(a + 0.9 * Utility.randomDouble(), 0.2, b + 0.9 * Utility.randomDouble());
+                Vec3 center = new Vec3(a + 0.9 * Utility.randomDouble(), 0.2, b + 0.9 * Utility.randomDouble());
 
-                if (center.sub(new Point3(4, 0.2, 0)).magnitude() > 0.9){
+                if (center.sub(new Vec3(4, 0.2, 0)).magnitude() > 0.9){
                     Material sphereMaterial;
 
                     if (chooseMaterial < 0.8){
                         // Diffuse or Lambertian or Matte
-                        Color albedo = Color.random().multiply(Color.random());
+                        Vec3 albedo = Vec3.random().multiply(Vec3.random());
                         sphereMaterial = new Lambertian(albedo);
                         world.add(new Sphere(center,0.2, sphereMaterial));
                     }
                     else if (chooseMaterial < 0.95){
                         // Metal
-                        Color albedo = Color.random().multiply(Color.random());
+                        Vec3 albedo = Vec3.random().multiply(Vec3.random());
                         double fuzz = Utility.randomDouble(0, 0.4);
                         sphereMaterial = new Metal(albedo, fuzz);
                         world.add(new Sphere(center,0.2, sphereMaterial));
@@ -105,13 +105,13 @@ public class Main {
         }
         // Big spheres in the middle
         Material material1 = new Dielectric(1.5);
-        world.add(new Sphere(new Point3(0,1,0), 1.0, material1));
+        world.add(new Sphere(new Vec3(0,1,0), 1.0, material1));
 
-        Material material2 = new Lambertian(new Color(0.4,0.2,0.1));
-        world.add(new Sphere(new Point3(-4,1,0), 1.0, material2));
+        Material material2 = new Lambertian(new Vec3(0.4,0.2,0.1));
+        world.add(new Sphere(new Vec3(-4,1,0), 1.0, material2));
 
-        Material material3 = new Metal(new Color(0.7,0.6,0.2), 0.0);
-        world.add(new Sphere(new Point3(4,1,0), 1.0, material3));
+        Material material3 = new Metal(new Vec3(0.7,0.6,0.2), 0.0);
+        world.add(new Sphere(new Vec3(4,1,0), 1.0, material3));
 
         cam.aspectRatio      = 16.0 / 9.0;
         cam.imageWidth       = 1280;
@@ -119,8 +119,8 @@ public class Main {
         cam.maxDepth         = 15;
 
         cam.vFov     = 20;
-        cam.lookFrom = new Point3(13,2,3);
-        cam.lookAt   = new Point3(0,0,0);
+        cam.lookFrom = new Vec3(13,2,3);
+        cam.lookAt   = new Vec3(0,0,0);
         cam.vUp      = new Vec3(0,1,0);
 
         cam.defocusAngle = 0;

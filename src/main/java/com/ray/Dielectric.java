@@ -8,8 +8,8 @@ public class Dielectric implements Material{
     }
 
     @Override
-    public boolean scatter(Ray incomingRay, HitRecord rec, Color attenuation, Ray scattered){
-        attenuation.set(new Color(1.0, 1.0, 1.0));
+    public boolean scatter(Ray incomingRay, HitRecord rec, Vec3 attenuation, Ray scattered){
+        attenuation.set(new Vec3(1.0, 1.0, 1.0));
         double ri = rec.front_face ? (1.0/refractiveIndex) : refractiveIndex;
 
         Vec3 unitDirection = incomingRay.getDirection().unitVector();

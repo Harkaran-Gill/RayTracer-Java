@@ -1,7 +1,7 @@
 package com.ray;
 
 public class HitRecord {
-    Point3 p;
+    Vec3 p;
     Vec3 normal;
     Material mat;
     double t;

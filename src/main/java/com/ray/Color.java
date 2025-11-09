@@ -9,40 +9,6 @@ public class Color extends Vec3 {
     public Color(double x, double y, double z) {super(x, y, z);}
     public Color(Vec3 v) {super(v.x(), v.y(), v.z());}
 
-    @Override
-    public Color multiplySelf(double t){
-        // The cast here would not normally work but since the super.multiplySelf returns 'this'
-        // it is actually returning a Vec3 reference to Color object in memory, which can be
-        // then successfully cast. Polymorphism for the WIN
-        return (Color) super.multiplySelf(t);
-    }
-
-    @Override
-    public Color multiplySelf(Vec3 v){
-        return (Color) super.multiplySelf(v);
-    }
-
-    @Override
-    public Color addSelf(Vec3 v){
-        return (Color) super.addSelf(v);
-    }
-
-    @Override
-    public Color add(Vec3 v) {
-        return new Color(super.add(v));
-    }
-
-    @Override
-    public Color multiply(double t){
-        Vec3 result = super.multiply(t);
-        return new Color(result);
-    }
-
-    @Override
-    public Color multiply(Vec3 v){
-        return new Color(super.multiply(v));
-    }
-
     // Colour utility methods
     public static Color random(){
         return new Color(Utility.randomDouble(), Utility.randomDouble(), Utility.randomDouble());
@@ -73,7 +39,7 @@ public class Color extends Vec3 {
 
         pw.write(rByte + " " + gByte + " " + bByte + "\n");
     }
-    static void writePNG(BufferedImage img, Color pixel_color, int x, int y) {
+    static void writePNG(BufferedImage img, Vec3 pixel_color, int x, int y) {
         var r = pixel_color.x();
         var g = pixel_color.y();
         var b = pixel_color.z();
