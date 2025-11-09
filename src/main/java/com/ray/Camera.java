@@ -41,6 +41,7 @@ public class Camera {
     private Vec3  defocusDiskV;          // Defocus disk vertical radius
 
     private BufferedImage img;
+    private static final Vec3 BLACK = new Vec3(0, 0, 0);
 
     void multiThreadRender(Hittable world){
         initialize();
@@ -191,12 +192,12 @@ public class Camera {
         // Base Case 1
         // Returning BLACK colour if number of ray bounces exceeds set threshold
         if (depth <= 0) {
-            return new Vec3(0,0,0);
+            return BLACK;
         }
 
         // Creating a HitRecord, serves as an output parameter
         HitRecord rec = new HitRecord();
-        if (world.hit(r, new Interval(0.001, Utility.infinity), rec)){
+        if (world.hit(r, new Interval(0.001, Utility.infinity), rec)) {
             // scattered and attenuation are also output parameters
             Ray scattered = new Ray();
             Vec3 attenuation = new Vec3();

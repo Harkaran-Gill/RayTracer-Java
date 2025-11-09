@@ -23,10 +23,10 @@ public class Sphere implements Hittable {
     // intersects with the sphere
     @Override
     public boolean hit(Ray r, Interval rayInterval, HitRecord rec) {
-        Vec3 oc = center.sub(r.getOrigin());
+        Vec3 oc  = center.sub(r.getOrigin());
         double a = r.getDirection().magnitudeSquared();
-        double h = r.getDirection().dot(oc);
         double c = oc.magnitudeSquared() - radiusSquared;
+        double h = r.getDirection().dot(oc);
         double discriminant = h * h - a * c;
         if (discriminant < 0.0) {
             return false;

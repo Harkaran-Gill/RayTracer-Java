@@ -13,8 +13,8 @@ public class BVH implements Hittable {
     // Custom constructor, build a binary
     BVH(List<Hittable> objects, int start, int end){
         bBox = AABB.empty;
-        for (int objectIndex= 0; objectIndex < objects.size(); objectIndex++){
-            bBox = new AABB(bBox, objects.get(objectIndex).boundingBox());
+        for (Hittable object : objects) {
+            bBox = new AABB(bBox, object.boundingBox());
         }
 
         int axis = bBox.longestAxis();
@@ -46,22 +46,23 @@ public class BVH implements Hittable {
         this(new ArrayList<>(list.arr), 0, list.arr.size());
     }
 
-    public boolean hit(Ray r, Interval rayInterval, HitRecord rec){
+    public boolean hit(Ray r, final Interval rayInterval, HitRecord rec){
         if (!bBox.hit(r, rayInterval))
             return false;
 
-        HitRecord leftRec = new HitRecord();
-        HitRecord rightRec = new HitRecord();
+        HitRecord temp = new HitRecord();
 
-        boolean hitLeft = left.hit(r, rayInterval, leftRec);
-        boolean hitRight = right.hit(r, new Interval(rayInterval.min, hitLeft ? leftRec.t : rayInterval.max), rightRec);
+        boolean hitLeft = left.hit(r, rayInterval, rec);
+        boolean hitRight = right.hit(r, rayInterval, temp);
 
         if (hitLeft && hitRight) {
-            rec.copyFrom(leftRec.t < rightRec.t ? leftRec : rightRec);
-        } else if (hitLeft) {
-            rec.copyFrom(leftRec);
-        } else if (hitRight) {
-            rec.copyFrom(rightRec);
+            rec.set(temp.t < rec.t ? temp : rec);
+        }
+        else if (hitLeft){
+            return  true;
+        }
+        else if (hitRight) {
+            rec.set(temp);
         } else {
             return false;
         }

@@ -99,7 +99,7 @@ public class Vec3 {
         );
     }
 
-    Vec3 sub(final Vec3 other) {
+    Vec3 sub(Vec3 other) {
         return new Vec3(
                 e[0] - other.e[0],
                 e[1] - other.e[1],
