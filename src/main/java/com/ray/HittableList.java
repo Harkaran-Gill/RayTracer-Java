@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HittableList implements Hittable {
-    // This class holds all the objects in the Scene.
-    // using ArrayList for convenience, and then transferring objects to classic
-    // array for speed
+    // This class holds all the objects in the Scene uses ArrayList for convenience
     final List<Hittable> arr = new ArrayList<>();
-    // private Hittable[] hittables;
-    private HitRecord tempRecord;
+    private final HitRecord tempRecord;
     private AABB bBox = new AABB();
 
     public HittableList() { tempRecord = new HitRecord(); }
@@ -24,12 +21,6 @@ public class HittableList implements Hittable {
     void add(Hittable object) {
         arr.add(object);
         bBox = new AABB(bBox, object.boundingBox());
-    }
-
-    void initializeArray() {
-        //hittables = new Hittable[arr.size()];
-        //hittables = arr.toArray(hittables);
-        //clear();
     }
 
     @Override

@@ -29,7 +29,6 @@ public class Main {
         }
         long start_time =  System.nanoTime();
         world = new HittableList(new BVH(world));
-        //world.initializeArray();
         cam.render(world);
 
         long end_time = System.nanoTime();
