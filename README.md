@@ -17,8 +17,6 @@ features, memory management, and object-oriented design.
 You can run this project by either building an executable JAR file with Maven
 or by running the source code directly from your Integrated Development Environment (IDE).
 
-TIP: Run scene1 method by simply uncommenting Line 13. Make sure ONLY to run 
-single scene at a time.
 
 ### Build with Maven
 
