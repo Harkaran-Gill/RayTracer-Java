@@ -16,7 +16,7 @@ public class Main {
         System.out.println("2: Scene-2, A more complex scene with more than 50 spheres");
         Scanner sc = new Scanner(System.in);
         while(true) {
-            int user_choice = 1;//sc.nextInt();
+            int user_choice = 2;//sc.nextInt();
             if (user_choice == 1) {
                 scene1(world, cam);
                 break;
@@ -114,9 +114,9 @@ public class Main {
         world.add(new Sphere(new Vec3(4,1,0), 1.0, material3));
 
         cam.aspectRatio      = 16.0 / 9.0;
-        cam.imageWidth       = 1280;
-        cam.samplesPerPixel  = 100;
-        cam.maxDepth         = 15;
+        cam.imageWidth       = 800;
+        cam.samplesPerPixel  = 50;
+        cam.maxDepth         = 10;
 
         cam.vFov     = 20;
         cam.lookFrom = new Vec3(13,2,3);

@@ -56,7 +56,8 @@ public class BVH implements Hittable {
         boolean hitRight = right.hit(r, rayInterval, temp);
 
         if (hitLeft && hitRight) {
-            rec.set(temp.t < rec.t ? temp : rec);
+            if (temp.t < rec.t)
+                rec.set(temp);
         }
         else if (hitLeft){
             return  true;
