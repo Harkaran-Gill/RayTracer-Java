@@ -16,7 +16,7 @@ public class Main {
         System.out.println("2: Scene-2, A more complex scene with more than 50 spheres");
         Scanner sc = new Scanner(System.in);
         while(true) {
-            int user_choice = 2;//sc.nextInt();
+            int user_choice = 1;//sc.nextInt();
             if (user_choice == 1) {
                 scene1(world, cam);
                 break;
@@ -30,12 +30,13 @@ public class Main {
         long start_time =  System.nanoTime();
         world = new HittableList(new BVH(world));
         // cam.nThreads = 10;
-        cam.TILE_SIZE = 32;
+        cam.TILE_SIZE = 64;
         cam.multiThreadRender(world);
 
         long end_time = System.nanoTime();
         System.out.println();
         System.out.println("Time taken: " + (end_time - start_time)/1e9 + " seconds");
+        System.exit(0);
     }
 
     // Scene1, A simpler scene for faster rendering
@@ -54,9 +55,9 @@ public class Main {
         world.add(new Sphere(new Vec3(1.0,0.0,-1.0), 0.5, materialRight));
 
         cam.aspectRatio     = 16.0/9.0;
-        cam.imageWidth      = 800;
-        cam.samplesPerPixel = 50;
-        cam.maxDepth        = 10;
+        cam.imageWidth      = 1280;
+        cam.samplesPerPixel = 100;
+        cam.maxDepth        = 15;
 
         cam.vFov     = 30;
         cam.lookFrom = new Vec3(-2,2,1);

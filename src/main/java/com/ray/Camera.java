@@ -1,9 +1,13 @@
 package com.ray;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -40,16 +44,20 @@ public class Camera {
     private Vec3  defocusDiskU;          // Defocus disk horizontal radius
     private Vec3  defocusDiskV;          // Defocus disk vertical radius
 
+
+    private ImagePanel imagePanel;
     private BufferedImage img;
-    private static final Vec3 BLACK = new Vec3(0, 0, 0);
+    private JFrame frame;
+
+    private static final Vec3 BLACK = new Vec3(0, 0, 0);        // Black Color
 
     void multiThreadRender(Hittable world){
         initialize();
-        List<Callable<Void>> tasks = new ArrayList<>();
         AtomicInteger tilesDone = new AtomicInteger(0);
         int tilesX = (imageWidth + TILE_SIZE - 1) / TILE_SIZE;
         int tilesY = (imageHeight + TILE_SIZE - 1) / TILE_SIZE;
         int totalTiles = tilesX * tilesY;
+        List<Callable<Void>> tasks = new ArrayList<>(totalTiles);
 
         for (int ty = 0; ty < tilesY; ty++) {
             for (int tx = 0; tx < tilesX; tx++) {
@@ -65,6 +73,7 @@ public class Camera {
                         System.out.printf("Tiles rendered %d/%d \r", done, totalTiles);
                     return null;
                 });
+                Collections.shuffle(tasks);
             }
         }
 
@@ -104,7 +113,7 @@ public class Camera {
                     }
                 }
                  {
-                    Color.writePNG(img, pixelColor.multiplySelf(pixelSampleScale), i, j);
+                    Color.writePNG(img, pixelColor.multiplySelf(pixelSampleScale), i, j, imagePanel);
                 }
             }
         }
@@ -154,13 +163,20 @@ public class Camera {
         defocusDiskU = u.multiply(defocusRadius);
         defocusDiskV = v.multiply(defocusRadius);
 
-
-        img = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
-
         // initialize Executor service and nThreads(if not set manually by the user)
         if(nThreads == 0)
             nThreads = Runtime.getRuntime().availableProcessors();
         executor = Executors.newFixedThreadPool(nThreads);
+
+        // Initialize ImagePanel, JFrame, Buffered Image
+        img = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
+        imagePanel = new ImagePanel(img);
+        frame = new JFrame("RayTracer");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(imagePanel);
+        frame.pack();
+        frame.setSize(imageWidth, imageHeight);
+        frame.setVisible(true);
     }
 
     Ray getRay(int i,int j){

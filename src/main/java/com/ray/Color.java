@@ -39,7 +39,7 @@ public class Color extends Vec3 {
 
         pw.write(rByte + " " + gByte + " " + bByte + "\n");
     }
-    static void writePNG(BufferedImage img, Vec3 pixel_color, int x, int y) {
+    static void writePNG(BufferedImage img, Vec3 pixel_color, int x, int y, ImagePanel imagePanel) {
         var r = pixel_color.x();
         var g = pixel_color.y();
         var b = pixel_color.z();
@@ -56,5 +56,6 @@ public class Color extends Vec3 {
 
         int rgb = (rByte << 16) | (gByte << 8) | bByte;
         img.setRGB(x, y, rgb);
+        imagePanel.repaint();
     }
 }
