@@ -2,11 +2,9 @@ package com.ray;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -175,7 +173,7 @@ public class Camera {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(imagePanel);
         frame.pack();
-        frame.setSize(imageWidth, imageHeight);
+        frame.setSize(1280, 720);
         frame.setVisible(true);
     }
 

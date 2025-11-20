@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         // World with all the objects
         HittableList world = new HittableList();
         Camera cam = new Camera();
@@ -16,7 +16,7 @@ public class Main {
         System.out.println("2: Scene-2, A more complex scene with more than 50 spheres");
         Scanner sc = new Scanner(System.in);
         while(true) {
-            int user_choice = 1;//sc.nextInt();
+            int user_choice = 2;//sc.nextInt();
             if (user_choice == 1) {
                 scene1(world, cam);
                 break;
@@ -36,6 +36,8 @@ public class Main {
         long end_time = System.nanoTime();
         System.out.println();
         System.out.println("Time taken: " + (end_time - start_time)/1e9 + " seconds");
+        System.gc();
+        Thread.sleep(1000);
         System.exit(0);
     }
 
@@ -115,8 +117,8 @@ public class Main {
         world.add(new Sphere(new Vec3(4,1,0), 1.0, material3));
 
         cam.aspectRatio      = 16.0 / 9.0;
-        cam.imageWidth       = 800;
-        cam.samplesPerPixel  = 50;
+        cam.imageWidth       = 1920;
+        cam.samplesPerPixel  = 100;
         cam.maxDepth         = 10;
 
         cam.vFov     = 20;
